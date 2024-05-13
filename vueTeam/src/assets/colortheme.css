@@ -1,0 +1,19 @@
+:root {
+    --trip-color-one: rgb(255, 153, 0);
+    --trip-color-two: rgb(255, 60, 0);
+    --trip-color-three: rgb(233, 201, 151);
+    --trip-color-four: rgb(138, 90, 76);
+}
+
+.back-one {
+    background-color: rgb(255, 153, 0);
+}
+
+.back-two {
+    background-color: rgb(255, 60, 0);
+}
+
+.border-one {
+    border: 2px solid rgb(233, 201, 151);
+    border-radius: 6px;
+}

@@ -10,7 +10,7 @@
 
 <template>
     <div class="navWrapper">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg navbar-dark back-one">
             <div class="container-fluid">
                 <a :href="homeRoute" class="navbar-brand">ENJOY TRIP</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,9 +45,25 @@
 </template>
 
 <style>
+@import "../assets/colortheme.css";
+
     .navWrapper {
         box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
         margin-bottom: 1rem;
+    }
+
+    .navbar {
+        color: white;
+    }   
+
+    .nav-item {
+        border-radius: 6px;
+        margin-top: 1rem auto;
+        padding-left: 1rem auto;
+    }
+
+    .nav-item:hover {
+        background-color: rgb(255, 60, 0);
     }
 </style>
 
