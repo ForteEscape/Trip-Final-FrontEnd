@@ -5,7 +5,7 @@
 
 	const count = ref(0);
     const router = useRouter();
-    const spotCount = ref(2024);
+    const spotCount = ref(20240513);
 
     function getCount() {
         
@@ -24,7 +24,7 @@
             </ol>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                <img class="d-block w-100" src="../assets/test.png" alt="First slide">
+                <img class="d-block w-100" src="../assets/test1.jpg" alt="First slide">
 
                 </div>
                 <div class="carousel-item">
@@ -32,22 +32,31 @@
 
                 </div>
                 <div class="carousel-item">
-                <img class="d-block w-100" src="../assets/test.png" alt="Third slide">
+                <img class="d-block w-100" src="../assets/test3.jpg" alt="Third slide">
 
                 </div>
             </div>
         </div>
+
+        <hr style="width: 70%;">
+        
         <div class="fancy-container">
-            <div class="fancy-number">총 &nbsp</div>
+            <div class="fancy-number">총&nbsp</div>
             <div class="fancy-number" id="count">
                 <DynamicNum v-bind:spotCount="spotCount"></DynamicNum>
             </div>
-            <div class="fancy-number">개의 &nbsp 여행지</div>
+            <div class="fancy-number">&nbsp개의 여행지</div>
         </div>
-        <p>ENJOY TRIP과 함께 하세요!</p>
-        <hr style="width: 70%;">
-        
-        <div style="height: 3000px;"></div>
+        <p style="border-bottom: 2px solid var(--trip-color-one);">ENJOY TRIP과 함께 하세요!</p>
+
+        <div class="info-row">
+            <div class="info-item">
+
+            </div>
+            <div class="info-item">
+
+            </div>
+        </div>
         
     </div> 
 </template>

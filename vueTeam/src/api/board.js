@@ -8,8 +8,8 @@ function selectAll(success, fail) {
     .catch(fail);
 }
 
-function selectOne(num, success, fail) {
-    myaxios.get(`${url}/${num}`)
+function selectOne(id, success, fail) {
+    myaxios.get(`${url}/${id}`)
     .then(success)
     .catch(fail)
 }
@@ -20,14 +20,14 @@ function addBoard(board, success, fail) {
     .catch(fail)
 }
 
-function removeBoard(num, success, fail) {
-    myaxios.delete(`${url}/${num}`)
+function removeBoard(id, success, fail) {
+    myaxios.delete(`${url}/${id}`)
     .then(success)
     .catch(fail)
 }
 
 function updateBoard(board, success, fail) {
-    myaxios.put(`${url}/${board.num}`, board)
+    myaxios.put(`${url}/${board.id}`, board)
     .then(success)
     .catch(fail)
 }

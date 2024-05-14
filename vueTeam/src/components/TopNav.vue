@@ -6,38 +6,39 @@
     const boardRoute = '/board';
     const myPageRoute = '/myPage';
     const loginRoute = '/login';
+    const searchRoute = '/spotSearch'
 </script>
 
 <template>
     <div class="navWrapper">
         <nav class="navbar navbar-expand-lg navbar-dark back-one">
             <div class="container-fluid">
-                <a :href="homeRoute" class="navbar-brand">ENJOY TRIP</a>
+                <RouterLink :to="homeRoute" class="navbar-brand" style="font-size: 30px;">🚇 ENJOY TRIP</RouterLink>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                    <li class="nav-item">
-                        <a :href="homeRoute" class="nav-link active" aria-current="page">홈</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a :href="boardRoute" class="nav-link active" aria-current="page">게시판</a>
-                    </li>
-                    
-                    <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        계정 관리
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" :href="myPageRoute">마이페이지</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" :href="loginRoute">로그인(임시)</a></li>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <RouterLink :to="homeRoute" class="nav-link active" aria-current="page">홈</RouterLink>
+                        </li>
+                        <li class="nav-item">
+                            <RouterLink :to="boardRoute" class="nav-link active" aria-current="page">게시판</RouterLink>
+                        </li>
+                        <li class="nav-item">
+                            <RouterLink :to="searchRoute" class="nav-link active" aria-current="page">여행지 조회</RouterLink>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                계정 관리
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><RouterLink class="dropdown-item" :to="myPageRoute">마이페이지</RouterLink></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><RouterLink class="dropdown-item" :to="loginRoute">로그인(임시)</RouterLink></li>
+                            </ul>
+                        </li>
                     </ul>
-                    </li>
-                </ul>
                 </div>
             </div>
         </nav>
@@ -47,23 +48,22 @@
 <style>
 @import "../assets/colortheme.css";
 
-    .navWrapper {
-        box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
-        margin-bottom: 1rem;
-    }
+.navWrapper {
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1rem;
+}
 
-    .navbar {
-        color: white;
-    }   
+.navbar {
+    color: white;
+}   
 
-    .nav-item {
-        border-radius: 6px;
-        margin-top: 1rem auto;
-        padding-left: 1rem auto;
-    }
+.nav-item {
+    border-radius: 6px;
+    margin-top: 1rem auto;
+    padding-left: 1rem auto;
+}
 
-    .nav-item:hover {
-        background-color: rgb(255, 60, 0);
-    }
+.nav-item:hover {
+    background-color: rgb(255, 60, 0);
+}
 </style>
-

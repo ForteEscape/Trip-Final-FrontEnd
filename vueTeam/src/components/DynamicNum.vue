@@ -14,13 +14,13 @@
     onMounted(() => {
         setTimeout(() => {
             number.value = props.spotCount; // props.spotCount를 number의 값으로 설정
-            gsap.to(tweened, {duration:0.6, number: props.spotCount}); // GSAP 애니메이션 시작
+            gsap.to(tweened, {duration:2, number: props.spotCount}); // GSAP 애니메이션 시작
         }, 100);
     });
 
-    watch(number, (n) => {
-        gsap.to(tweened, {duration:0.6, number: Number(n) || 0 });
-    });
+    // watch(number, (n) => {
+    //     gsap.to(tweened, {duration:0.6, number: Number(n) || 0 });
+    // });
 </script>
 
 <template>

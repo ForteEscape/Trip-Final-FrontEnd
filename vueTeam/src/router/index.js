@@ -4,6 +4,8 @@ import BoardView from '@/views/BoardView.vue'
 import BoardDetailView from '@/views/BoardDetailView.vue'
 import MyPageView from '@/views/MyPageView.vue'
 import LoginView from '@/views/LoginView.vue'
+import SpotSearchView from '@/views/SpotSearchView.vue'
+import BoardWriteView from '@/views/BoardWriteView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,9 +31,19 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/detail/:num',
+      path: '/detail/:id',
       name: 'detail',
       component: BoardDetailView
+    },
+    {
+      path: '/spotSearch',
+      name: 'spotsearch',
+      component: SpotSearchView
+    },
+    {
+      path: '/boardWrite',
+      name: 'boardwrite',
+      component: BoardWriteView
     },
   ]
 })

@@ -8,7 +8,9 @@ import TopNav from "./components/TopNav.vue"
   <div class="pageWrapper scrollbar">
     <TopNav></TopNav>
     <main>
-      <RouterView />
+      <Transition name="fade">
+        <RouterView />
+      </Transition>
     </main>
   </div>
 </template>
@@ -21,10 +23,9 @@ div {
     font-size: large;
     font-weight: 600;
     font-style: normal;
-}
-.pageWrapper {
-  min-width: 100%;
-  min-height: 100%;
+    /* font-family: "Black Han Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal; */
 }
 .TopNav {
   width: 100%;
@@ -40,15 +41,22 @@ header {
 
 /* 스크롤바의 폭 너비 */
 .scrollbar::-webkit-scrollbar {
-    width: 10px;  
+    width: 8px;  
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(220, 20, 60); /* 스크롤바 색상 */
-    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+    background: var(--trip-color-two); /* 스크롤바 색상 */
+    border-radius: 2px; /* 스크롤바 둥근 테두리 */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-    background: rgba(220, 20, 60, .1);  /*스크롤바 뒷 배경 색상*/
+    background: var(--trip-color-three)
+}
+
+.fade-enter-active,.fade-leave-active {
+  transition: opacity 2s;
+}
+.fade-enter-from,.fade-leave-to {
+  opacity: 0;
 }
 </style>

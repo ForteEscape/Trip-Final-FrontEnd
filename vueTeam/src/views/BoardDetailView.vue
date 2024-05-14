@@ -3,13 +3,13 @@ import { selectOne, removeBoard, updateBoard} from "@/api/board.js";
 import {useRoute, useRouter} from "vue-router";
 import { onMounted, ref } from "vue";
 
-const num = ref(0);
+const id = ref(0);
 const pass = ref("");
 const name = ref("");
 const wdate = ref("");
 const title = ref("");
 const content = ref("");
-const count = ref(0);
+const readCount = ref(0);
 
 const isEditing = ref(false);
 const editTitle = ref("");
@@ -17,10 +17,10 @@ const editContent = ref("");
 
 const currentRoute = useRoute();
 const router = useRouter();
-const key = currentRoute.params.num
+const key = currentRoute.params.id;
 
 onMounted(() => {
-  console.log('mounted...');
+  console.log('mounted...' + key);
   getOne();
 })
 
@@ -33,46 +33,47 @@ function toggleEdit() {
 function getOne() {
   selectOne(key, 
     ({data}) => {
-      num.value = data.num;
+      id.value = data.id;
       pass.value = data.pass;
       name.value = data.name;
       wdate.value = data.wdate;
       title.value = data.title;
       content.value = data.content;
-      count.value = data.count;
+      readCount.value = data.readCount;
     },
     (error) => {console.log(error)}
   )
 }
 
-// function boardDelete() {
-//   removeBoard(
-//   key,
-//   () => {
-//     alert("삭제처리 완료"); 
-//     router.push("/list");
-//   },
-//   (error) => {
-//     alert("삭제처리 실패");
-//     console.log(error)
-//   }
-//   )
-// }
+function boardDelete() {
+  removeBoard(
+  key,
+  () => {
+    alert("삭제처리 완료"); 
+    router.push("/board");
+  },
+  (error) => {
+    alert("삭제처리 실패");
+    console.log(error)
+  }
+  )
+}
 
 function boardUpdate() {
     content.value = editContent.value;
     title.value = editTitle.value;
-
+    id.value = key;
   const newBoard = {
-      num: num.value,
+      id: id.value,
       pass: pass.value,
       name: name.value,
       wdate: wdate.value,
-      title: title.value,
-      content: content.value,
-      count: count.value
+      title: editTitle.value,
+      content: editContent.value,
+      readCount: readCount.value
     }
 
+    console.log(newBoard)
   updateBoard(
   newBoard,
   () => {
@@ -90,13 +91,16 @@ function boardUpdate() {
 
 <template>
   <div class="board-wrapper">
-    <div class="small-label">제목</div>
-    <div class="title">
-        <h1 v-show="!isEditing">📋{{title}}📋</h1>
-        <input v-show="isEditing" type="text" v-model="editTitle"/>
-    </div>
+    <div class="page-icon">🔎</div>
+    <div class="title"><h1>게시글 읽기</h1></div>
     
     <div class="board-info">
+        <div class="small-label">제목</div>
+        <div>
+            <h3 v-show="!isEditing">{{title}}</h3>
+            <input v-show="isEditing" type="text" v-model="editTitle"/>
+        </div>
+
         <div class="small-label">작성자</div>
         <h5>{{ name }}</h5>
 
@@ -104,8 +108,9 @@ function boardUpdate() {
         <h5>{{ wdate }}</h5>
 
         <div class="small-label">조회수</div>
-        <h5>{{ count }}</h5>
+        <h5>{{ readCount }}</h5>
     </div>
+    <hr style="width: 90%;">
 
     <div class="board-content">
         <p v-if="!isEditing">{{content}}</p>
@@ -113,18 +118,32 @@ function boardUpdate() {
     </div>
 
     <button v-if="!isEditing" @click="toggleEdit">글 수정</button>
+    <button v-if="!isEditing" @click="boardDelete">글 삭제</button>
     <button v-if="isEditing" @click="toggleEdit">수정 취소</button>
     <button v-if="isEditing" @click="boardUpdate">수정 반영</button>
   </div>
 </template>
 
 <style scoped>
-.small-label {
-    font-size: xx-small;
-    font-weight: bold;
+
+.page-icon {
+  font-size: 60px;
 }
-.title {
-    margin-bottom: 3rem;
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title *{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 40px;
+  font-weight: 700;
 }
 
 .board-wrapper {
@@ -137,10 +156,13 @@ function boardUpdate() {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 70%;
+    width: 90%;
     border-radius: 8px;
-    border-bottom: 2px solid rgb(84, 85, 179);
-    margin-bottom: 2rem;
+}
+
+.small-label {
+
+  margin-top: 1rem;
 }
 
 .board-content {
@@ -149,5 +171,19 @@ function boardUpdate() {
     border-radius: 8px;
     border: 2px solid gray;
     padding: 1rem 2rem;
+}
+
+textarea,input {
+  border: 2px solid var(--trip-color-six);
+  border-radius: 4px;
+  padding: 1rem 1rem;
+  width: 100%;
+}
+input {
+  display: inline-block;
+  text-align: center;
+}
+textarea {
+  border: none;
 }
 </style>
