@@ -117,14 +117,17 @@ function boardUpdate() {
         <textarea v-else v-model="editContent"></textarea>
     </div>
 
-    <button v-if="!isEditing" @click="toggleEdit">글 수정</button>
-    <button v-if="!isEditing" @click="boardDelete">글 삭제</button>
-    <button v-if="isEditing" @click="toggleEdit">수정 취소</button>
-    <button v-if="isEditing" @click="boardUpdate">수정 반영</button>
+    <div class="btn-group">
+      <button class="btn button-basic" v-if="!isEditing" @click="toggleEdit">글 수정</button>
+      <button class="btn btn-danger" v-if="!isEditing" @click="boardDelete">글 삭제</button>
+      <button v-if="isEditing" @click="toggleEdit">수정 취소</button>
+      <button v-if="isEditing" @click="boardUpdate">수정 반영</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+@import "../assets/colortheme.css";
 
 .page-icon {
   font-size: 60px;
@@ -185,5 +188,10 @@ input {
 }
 textarea {
   border: none;
+}
+
+.btn-group {
+  margin-top: 2rem;
+  gap: 1rem;
 }
 </style>

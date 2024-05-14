@@ -7,7 +7,7 @@
     --trip-color-six: rgb(233, 233, 233);
 }
 
-* {
+.btn {
     font-weight: 600;
 }
 
@@ -60,6 +60,8 @@
   }
 
   .button-basic:hover {
+    color: white;
+    font-weight: 600;
     background-color: var(--trip-color-two);
   }
   

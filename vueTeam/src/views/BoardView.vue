@@ -116,10 +116,6 @@
   border-radius: 4px;
 }
 
-.btn:hover {
-  background-color: var(--trip-color-two);
-}
-
 .card-title {
   font-weight: 600;
 }

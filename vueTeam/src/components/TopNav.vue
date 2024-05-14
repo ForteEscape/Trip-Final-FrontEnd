@@ -7,6 +7,7 @@
     const myPageRoute = '/myPage';
     const loginRoute = '/login';
     const searchRoute = '/spotSearch'
+    const registerRoute = '/customer/register'
 </script>
 
 <template>
@@ -36,6 +37,8 @@
                                 <li><RouterLink class="dropdown-item" :to="myPageRoute">마이페이지</RouterLink></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><RouterLink class="dropdown-item" :to="loginRoute">로그인(임시)</RouterLink></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><RouterLink class="dropdown-item" :to="registerRoute">회원 가입</RouterLink></li>
                             </ul>
                         </li>
                     </ul>

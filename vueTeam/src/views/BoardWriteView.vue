@@ -44,7 +44,7 @@ import { addBoard } from "@/api/board.js";
 
     <hr style="width: 90%;">
       <div class="content-wrapper shadow-inset">
-        <div id="post" action="/submit-post" method="post" enctype="multipart/form-data">
+        <div id="post">
             <label for="title">제목</label>
             <input type="text" v-model="title">
 
@@ -55,13 +55,15 @@ import { addBoard } from "@/api/board.js";
             <textarea id="content" name="content" rows="10" cols="50" v-model="content"></textarea>
             <br>
             <br>
-            <button @click="boardInsert">작성 완료</button>
+            <button type="button" class="btn button-basic" @click="boardInsert">작성 완료</button>
         </div>
       </div>
   </div>
 </template>
 
 <style scoped>
+@import "../assets/colortheme.css";
+
 .page-icon {
   font-size: 60px;
 }
