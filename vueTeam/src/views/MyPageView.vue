@@ -4,10 +4,12 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
+const url = "https://abcd4ebbe30a1e.lhr.life";
+
+const profile = ref(null);
 const email = ref("");
 const phone = ref("");
 const name = ref("");
-const profileImagePath = ref("");
 const sidoName = ref("");
 const gugunName = ref("");
 const userCode = ref("");
@@ -15,10 +17,10 @@ const comment = ref("");
 const isEditing = ref(false);
 
 // 원본 값 설정
+const profileImagePath = ref("");
 const originalEmail = ref("");
 const originalPhone = ref("");
 const originalName = ref("");
-const originalProfileImagePath = ref("");
 const originalSidoName = ref("");
 const originalGugunName = ref("");
 const originalUserCode = ref("");
@@ -30,7 +32,7 @@ const IsPasswordChange = ref(false);
 
 onMounted(() => {
   const accessToken = localStorage.getItem("accessToken");
-  const url = "https://412306c0976506.lhr.life";
+  // const url = "https://412306c0976506.lhr.life";
 
   if (!accessToken) {
     alert("로그인이 필요합니다");
@@ -48,20 +50,19 @@ onMounted(() => {
         email.value = response.data.data.email;
         phone.value = response.data.data.phone;
         name.value = response.data.data.name;
-        profileImagePath.value = response.data.data.profileImagePath;
         gugunName.value = response.data.gugunName;
         sidoName.value = response.data.data.sidoName;
         userCode.value = response.data.data.userCode;
         comment.value = response.data.data.comment;
 
-        originalEmail = response.data.data.email;
-        originalPhone = response.data.data.phone;
-        originalName = response.data.data.name;
-        originalProfileImagePath = response.data.data.profileImagePath;
-        originalSidoName = response.data.data.sidoName;
-        originalGugunName = response.data.gugunName;
-        originalUserCode = response.data.data.userCode;
-        originalComment = response.data.data.comment;
+        profileImagePath.value = response.data.data.profileImagePath;
+        originalEmail.value = response.data.data.email;
+        originalPhone.value = response.data.data.phone;
+        originalName.value = response.data.data.name;
+        originalSidoName.value = response.data.data.sidoName;
+        originalGugunName.value = response.data.gugunName;
+        originalUserCode.value = response.data.data.userCode;
+        originalComment.value = response.data.data.comment;
       })
       .catch((error) => {
         console.log(error);
@@ -70,10 +71,11 @@ onMounted(() => {
         }
       });
   }
+  console.log(profileImagePath);
 });
 
 function refreshAccessToken() {
-  const url = "https://412306c0976506.lhr.life";
+  // const url = "https://412306c0976506.lhr.life";
   console.log("refresh 시도");
   console.log("refreshToken : " + localStorage.getItem("refreshToken"));
   console.log("accessToken : " + localStorage.getItem("accessToken"));
@@ -103,36 +105,34 @@ function refreshAccessToken() {
     });
 }
 
-function isValidPhoneNumber(phoneNumber) {
-  const regex = /^\d{3}-\d{4}-\d{4}$/;
-  return regex.test(phoneNumber);
-}
-
-function isValidPassword(password) {
-  const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$%*?&])[A-Za-z\d@$%*?&]{8,16}$/;
-  return regex.test(password);
-}
-
 async function submitEdit() {
-  const url = "https://412306c0976506.lhr.life";
-  // Retrieve the access token from localStorage
+  // const url = "https://412306c0976506.lhr.life";
   const accessToken = localStorage.getItem("accessToken");
 
   try {
-    const new_customer = {
+    const formData = new FormData();
+    formData.append("profile", profile.value);
+
+    const userInfo = {
       name: name.value,
       phone: phone.value,
-      sidoCode: 1,
-      gunguCode: 1,
       comment: comment.value,
+      gunguCode: 1,
+      sidoCode: 1,
     };
 
-    console.log("고객 수정 시도 : " + JSON.stringify(new_customer));
+    const blob = new Blob([JSON.stringify(userInfo)], {
+      type: "application/json",
+    });
+    formData.append("userInfo", blob);
+
+    console.log("고객 수정 시도 : " + formData);
 
     await axios
-      .put(url + "/user", new_customer, {
+      .put(url + "/user", formData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
@@ -155,7 +155,6 @@ function cancelEdit() {
   email.value = originalEmail;
   phone.value = originalPhone;
   name.value = originalName;
-  profileImagePath.value = originalProfileImagePath;
   sidoName.value = originalSidoName;
   gugunName.value = originalGugunName;
   userCode.value = originalUserCode;
@@ -166,7 +165,7 @@ function cancelEdit() {
 
 async function changePassword() {
   try {
-    const url = "https://412306c0976506.lhr.life";
+    // const url = "https://412306c0976506.lhr.life";
     const accessToken = localStorage.getItem("accessToken");
 
     await axios.put(
@@ -192,6 +191,10 @@ async function changePassword() {
     console.log(error);
   }
 }
+
+function updateProfile(event) {
+  profile.value = event.target.files[0];
+}
 </script>
 
 <template>
@@ -202,14 +205,17 @@ async function changePassword() {
         {{ isEditing ? "수정 완료" : "수정" }}
       </button>
       <div v-if="isEditing">
+        <input type="file" @change="updateProfile" />
         <input type="text" v-model="name" placeholder="Name" required />
         <input type="text" v-model="phone" placeholder="Phone Number" />
         <textarea v-model="comment" placeholder="Comment"></textarea>
         <button @click="submitEdit">수정 제출</button>
         <button @click="cancelEdit">수정 취소</button>
       </div>
-      <p v-else>profileImagePath: {{ profileImagePath }}</p>
-      <!-- <img src="../assets/uploadTest_1.PNG" /> -->
+
+      주소
+      <p>{{ profileImagePath }}</p>
+      <img :src="profileImagePath" alt="프사" />
       <p>Email: {{ email }}</p>
       <p>Name: {{ name }}</p>
       <p>Phone: {{ phone }}</p>

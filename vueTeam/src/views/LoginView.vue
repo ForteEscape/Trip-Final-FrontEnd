@@ -4,6 +4,8 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
+const url = "https://abcd4ebbe30a1e.lhr.life";
+
 const email = ref("");
 const password = ref("");
 const name = ref("");
@@ -15,7 +17,7 @@ async function tryLogin() {
     password: password.value,
   };
   try {
-    const url = "https://412306c0976506.lhr.life";
+    // const url = "https://412306c0976506.lhr.life";
     console.log("로그인 시도 : " + email + "  " + password);
 
     await axios
@@ -47,7 +49,7 @@ async function findPassword() {
     name: name.value,
   };
   try {
-    const url = "https://412306c0976506.lhr.life";
+    // const url = "https://412306c0976506.lhr.life";
     await axios
       .post(url + "/user/password", body)
       .then((response) => {
@@ -71,7 +73,7 @@ async function findId() {
     phone: phone.value,
   };
   try {
-    const url = "https://412306c0976506.lhr.life";
+    // const url = "https://412306c0976506.lhr.life";
     await axios
       .post(url + "/user/email", body)
       .then((response) => {
