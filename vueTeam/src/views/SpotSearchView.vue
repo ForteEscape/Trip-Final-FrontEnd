@@ -41,6 +41,10 @@ export default {
       console.log("부모에서 emit 시도");
       this.$refs.KakaoMap.displayMarker(response);
     },
+
+    handleShowDetail: function () {
+      console.log("상세정보 보기 호출됨");
+    },
   },
 };
 </script>
@@ -81,7 +85,7 @@ export default {
         <button @click="search">검색하기</button>
       </div>
       <div id="map-content">
-        <KakaoMap ref="KakaoMap"></KakaoMap>
+        <KakaoMap ref="KakaoMap" @showDetail="handleShowDetail"></KakaoMap>
       </div>
     </div>
     <div id="panel-wrapper" class="shadow">

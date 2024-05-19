@@ -10,22 +10,21 @@ export default {
   name: "KakaoMap",
   data() {
     return {
-      markerPositions1: [
-        [33.452278, 126.567803],
-        [33.452671, 126.574792],
-        [33.451744, 126.572441],
-      ],
-      markerPositions2: [
-        [37.499590490909185, 127.0263723554437],
-        [37.499427948430814, 127.02794423197847],
-        [37.498553760499505, 127.02882598822454],
-        [37.497625593121384, 127.02935713582038],
-        [37.49629291770947, 127.02587362608637],
-        [37.49754540521486, 127.02546694890695],
-        [37.49646391248451, 127.02675574250912],
-      ],
+      // markerPositions1: [
+      //   [33.452278, 126.567803],
+      //   [33.452671, 126.574792],
+      //   [33.451744, 126.572441],
+      // ],
+      // markerPositions2: [
+      //   [37.499590490909185, 127.0263723554437],
+      //   [37.499427948430814, 127.02794423197847],
+      //   [37.498553760499505, 127.02882598822454],
+      //   [37.497625593121384, 127.02935713582038],
+      //   [37.49629291770947, 127.02587362608637],
+      //   [37.49754540521486, 127.02546694890695],
+      //   [37.49646391248451, 127.02675574250912],
+      // ],
       markers: [],
-      infowindow: null,
     };
   },
   mounted() {
@@ -62,7 +61,6 @@ export default {
     // displayMarker() :
     // 마커 좌표의 배열을 입력하면 해당 마커를 띄웁니다.
     displayMarker(markerPositions) {
-      alert("호출됨");
       if (this.markers.length > 0) {
         this.markers.forEach((marker) => marker.setMap(null));
       }
@@ -72,13 +70,50 @@ export default {
       );
 
       if (positions.length > 0) {
-        this.markers = positions.map(
-          (position) =>
-            new kakao.maps.Marker({
-              map: toRaw(this.map),
-              position,
-            })
-        );
+        this.markers = positions.map((position, index) => {
+          const marker = new kakao.maps.Marker({
+            clickable: true,
+            map: toRaw(this.map),
+            position,
+            info: `${index}번 마커`,
+          });
+
+          // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+          // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+          var iwContent = `
+        <div style="padding:5px; width: 6rem"; height:4rem>
+          <button id="planButton-${index}">계획에 추가</button>
+          <button id="detailButton-${index}">상세 정보</button>
+        </div>`,
+            iwRemoveable = true;
+
+          // 인포윈도우를 생성합니다
+          var infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+            removable: iwRemoveable,
+          });
+
+          let map = toRaw(this.map);
+
+          kakao.maps.event.addListener(marker, "click", () => {
+            infowindow.open(map, marker);
+            // infowindow가 열릴 때 버튼에 이벤트 리스너 추가
+            this.$nextTick(() => {
+              document
+                .getElementById(`planButton-${index}`)
+                .addEventListener("click", () => {
+                  alert(`계획에 추가 버튼 클릭 - ${index}번 마커`);
+                });
+              document
+                .getElementById(`detailButton-${index}`)
+                .addEventListener("click", () => {
+                  alert(`상세 정보 버튼 클릭 - ${index}번 마커`);
+                });
+            });
+          });
+
+          return marker;
+        });
 
         const bounds = positions.reduce(
           (bounds, latlng) => bounds.extend(latlng),
@@ -88,6 +123,7 @@ export default {
         toRaw(this.map).setBounds(bounds);
       }
     },
+    //displayMarkers 종료
   },
 };
 </script>
