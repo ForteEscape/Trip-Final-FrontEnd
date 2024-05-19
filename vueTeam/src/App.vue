@@ -1,7 +1,6 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import TopNav from "./components/TopNav.vue"
-
+import { RouterLink, RouterView } from "vue-router";
+import TopNav from "./components/TopNav.vue";
 </script>
 
 <template>
@@ -19,11 +18,11 @@ import TopNav from "./components/TopNav.vue"
 @import "./assets/colortheme.css";
 
 div {
-    font-family: "Gothic A1", sans-serif;
-    font-size: large;
-    font-weight: 600;
-    font-style: normal;
-    /* font-family: "Black Han Sans", sans-serif;
+  font-family: "Gothic A1", sans-serif;
+  font-size: large;
+  font-weight: 600;
+  font-style: normal;
+  /* font-family: "Black Han Sans", sans-serif;
     font-weight: 400;
     font-style: normal; */
 }
@@ -34,29 +33,35 @@ header {
   width: 100%;
 }
 
-.scrollbar { 
+.scrollbar {
   width: 100%;
   overflow-y: scroll; /*  */
 }
 
 /* 스크롤바의 폭 너비 */
 .scrollbar::-webkit-scrollbar {
-    width: 8px;  
+  width: 8px;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-    background: var(--trip-color-two); /* 스크롤바 색상 */
-    border-radius: 2px; /* 스크롤바 둥근 테두리 */
+  background: var(--trip-color-two); /* 스크롤바 색상 */
+  border-radius: 2px; /* 스크롤바 둥근 테두리 */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-    background: var(--trip-color-three)
+  background: var(--trip-color-three);
 }
 
-.fade-enter-active,.fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 2s;
 }
-.fade-enter-from,.fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
+}
+
+main {
+  margin-top: 6rem;
 }
 </style>

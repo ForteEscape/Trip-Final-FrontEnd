@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -8,8 +8,11 @@ const url = "https://abcd4ebbe30a1e.lhr.life";
 
 const email = ref("");
 const password = ref("");
-const name = ref("");
-const phone = ref("");
+
+const emailForPassword = ref("");
+const nameForPassword = ref("");
+const nameForEmail = ref("");
+const phoneForEmail = ref("");
 
 async function tryLogin() {
   const body = {
@@ -43,42 +46,40 @@ async function tryLogin() {
 }
 
 // 비밀번호 찾기 함수
-async function findPassword() {
+async function resetPassword() {
   const body = {
-    email: email.value,
-    name: name.value,
+    email: emailForPassword.value,
+    name: nameForPassword.value,
   };
   try {
-    // const url = "https://412306c0976506.lhr.life";
     await axios
       .post(url + "/user/password", body)
       .then((response) => {
-        console.log("비밀번호 찾기 성공", response.data);
-        alert(response.data.data.password);
+        console.log("성공! 비밀번호가 이메일로 초기화 되었습니다.");
+        console.log(response);
       })
       .catch((error) => {
-        console.error("비밀번호 찾기 실패", error);
-        alert("비밀번호 찾기 실패");
+        console.error("비밀번호 초기화 실패", error);
+        alert("올바르지 않은 입력");
       });
   } catch (error) {
     console.error(error);
-    alert("비밀번호 찾기 실패");
+    alert("비밀번호 초기화 실패");
   }
 }
 
 // 아이디 찾기 함수
 async function findId() {
   const body = {
-    name: name.value,
-    phone: phone.value,
+    name: nameForEmail.value,
+    phone: phoneForEmail.value,
   };
   try {
-    // const url = "https://412306c0976506.lhr.life";
     await axios
       .post(url + "/user/email", body)
       .then((response) => {
         console.log("아이디 찾기 성공", response.data);
-        alert(response.data.data);
+        alert("아이디 찾기 성공! : " + response.data.data);
       })
       .catch((error) => {
         console.error("아이디 찾기 실패", error);
@@ -89,47 +90,279 @@ async function findId() {
     alert("아이디 찾기 실패");
   }
 }
+
+function autoHypenPhone(value) {
+  value = value.replace(/[^0-9]/g, "");
+  let result = "";
+  if (value.length < 4) {
+    return value;
+  } else if (value.length < 7) {
+    result += value.slice(0, 3);
+    result += "-";
+    result += value.slice(3);
+    return result;
+  } else if (value.length < 11) {
+    result += value.slice(0, 3);
+    result += "-";
+    result += value.slice(3, 6);
+    result += "-";
+    result += value.slice(6);
+    return result;
+  } else {
+    result += value.slice(0, 3);
+    result += "-";
+    result += value.slice(3, 7);
+    result += "-";
+    result += value.slice(7);
+    return result;
+  }
+  return value;
+}
+
+watch(phoneForEmail, (newValue) => {
+  phoneForEmail.value = autoHypenPhone(newValue);
+});
 </script>
 
 <template>
-  <div class="login-container">
-    <form @submit.prevent="tryLogin">
-      <div class="input-group">
-        <label for="username">이메일</label>
-        <input type="text" id="email" v-model="email" required />
-      </div>
-      <div class="input-group">
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit">로그인</button>
-    </form>
+  <div class="page-wrapper">
+    <div class="page-icon">🔐</div>
+    <div class="title">
+      <h1>로그인</h1>
+    </div>
+    <div class="login-container shadow">
+      <form @submit.prevent="tryLogin">
+        <div class="input-group">
+          <label for="username">이메일 :&nbsp</label>
+          <input type="text" id="email" v-model="email" required />
+        </div>
+        <div class="input-group">
+          <label for="password">비밀번호 :&nbsp</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
+        <div class="input-group">
+          <button type="submit" class="btn button-basic">로그인</button>
+        </div>
+      </form>
 
-    이름
-    <input type="text" id="name" v-model="name" />
-    <br />
-    전번
-    <input type="text" id="phone" v-model="phone" />
-    <button @click="findPassword">비밀번호 찾기</button>
+      <hr style="width: 90%" />
+      <!-- 비밀번호 초기화 모달 -->
+      <div>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="modal"
+          data-target="#passwordModal"
+          data-whatever="@getbootstrap"
+        >
+          비밀번호 초기화
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="modal"
+          data-target="#emailModal"
+          data-whatever="@getbootstrap"
+        >
+          이메일 찾기
+        </button>
+      </div>
 
-    <button @click="findId">아이디 찾기</button>
+      <div
+        class="modal fade"
+        id="passwordModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="passwordModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="passwordModalLabel">
+                비밀번호 초기화
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="emailForPassword" class="col-form-label"
+                    >이메일</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="emailForPassword"
+                    v-model="emailForPassword"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="nameForPassword" class="col-form-label"
+                    >이름</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nameForPassword"
+                    v-model="nameForPassword"
+                  />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                닫기
+              </button>
+              <button
+                type="btn button-basic"
+                class="btn button-basic"
+                @click="resetPassword"
+              >
+                초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이메일 찾기 모달 -->
+      <div
+        class="modal fade"
+        id="emailModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="emailModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="emailModalLabel">비밀번호 초기화</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="nameForEmail" class="col-form-label">이름</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nameForEmail"
+                    v-model="nameForEmail"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="phoneForEmail" class="col-form-label"
+                    >핸드폰 번호</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="phoneForEmail"
+                    id="phoneForEmail"
+                    v-model="phoneForEmail"
+                    maxlength="13"
+                  />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                닫기
+              </button>
+              <button
+                type="btn button-basic"
+                class="btn button-basic"
+                @click="findId"
+              >
+                초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 <style scoped>
+@import "../assets/colortheme.css";
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .login-container {
-  width: 300px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 3rem;
+  border-radius: 8px;
 }
 
 .input-group {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 20px;
 }
 
 .input-group label {
   font-weight: bold;
+}
+
+.page-icon {
+  font-size: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  width: 7rem;
+  border-radius: 50%;
+}
+
+.title * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+input {
+  height: 2.5rem;
+  border: 2px solid var(--trip-color-one);
+  border-radius: 4px;
+}
+
+input:focus {
+  border: 2px solid var(--trip-color-two);
+  border-radius: 4px;
 }
 </style>

@@ -50,7 +50,7 @@ async function registerUser() {
 
 <template>
   <div class="page-wrapper">
-    <div class="page-icon">👥</div>
+    <div class="page-icon shadow">👥</div>
     <div class="title">
       <h1>회원 가입</h1>
     </div>
@@ -102,6 +102,22 @@ async function registerUser() {
 <style scoped>
 .page-icon {
   font-size: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  width: 7rem;
+  border-radius: 50%;
+}
+
+.title * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 40px;
+  font-weight: 700;
 }
 
 .page-wrapper {
