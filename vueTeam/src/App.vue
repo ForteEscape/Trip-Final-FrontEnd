@@ -17,7 +17,7 @@ import TopNav from "./components/TopNav.vue";
 <style>
 @import "./assets/colortheme.css";
 
-div {
+* {
   font-family: "Gothic A1", sans-serif;
   font-size: large;
   font-weight: 600;
@@ -41,6 +41,7 @@ header {
 /* 스크롤바의 폭 너비 */
 .scrollbar::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {

@@ -13,15 +13,7 @@ export default {
       markers: [],
     };
   },
-  unmounted() {
-    console.log("카카오맵 언마운트");
-    // Clean up markers and event listeners
-    if (this.markers.length > 0) {
-      this.markers.forEach((marker) => marker.setMap(null));
-      this.markers = [];
-    }
-    this.map = null;
-  },
+
   mounted() {
     console.log("카카오맵 마운트");
     if (window.kakao && window.kakao.maps) {
@@ -34,6 +26,17 @@ export default {
         "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=0fec12a978cde1e45de3863164ab1eda&libraries=services,clusterer,drawing";
       document.head.appendChild(script);
     }
+  },
+
+  beforeUnmount() {
+    if (this.map) {
+      console.log("카카오맵 언마운트 이전")
+      this.map = null;
+    }
+  },
+
+  unmounted() {
+    console.log("카카오맵 언마운트");
   },
   methods: {
     test: function (param) {

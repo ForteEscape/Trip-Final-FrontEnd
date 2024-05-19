@@ -118,9 +118,7 @@ export default {
         <button class="btn button-basic" @click="search">검색하기</button>
       </div>
       <div id="map-content">
-        <keep-alive>
           <KakaoMap ref="KakaoMap"></KakaoMap>
-        </keep-alive>
       </div>
     </div>
 

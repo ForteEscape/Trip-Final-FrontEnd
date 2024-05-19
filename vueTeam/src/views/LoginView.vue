@@ -126,18 +126,18 @@ watch(phoneForEmail, (newValue) => {
 
 <template>
   <div class="page-wrapper">
-    <div class="page-icon">🔐</div>
+    <div class="page-icon shadow">🔐</div>
     <div class="title">
       <h1>로그인</h1>
     </div>
     <div class="login-container shadow">
       <form @submit.prevent="tryLogin">
         <div class="input-group">
-          <label for="username">이메일 :&nbsp</label>
+          <label for="username">이메일</label>
           <input type="text" id="email" v-model="email" required />
         </div>
         <div class="input-group">
-          <label for="password">비밀번호 :&nbsp</label>
+          <label for="password">비밀번호</label>
           <input type="password" id="password" v-model="password" required />
         </div>
         <div class="input-group">
@@ -147,7 +147,7 @@ watch(phoneForEmail, (newValue) => {
 
       <hr style="width: 90%" />
       <!-- 비밀번호 초기화 모달 -->
-      <div>
+      <div id="find-buttons">
         <button
           type="button"
           class="btn btn-secondary"
@@ -249,7 +249,7 @@ watch(phoneForEmail, (newValue) => {
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="emailModalLabel">비밀번호 초기화</h5>
+              <h5 class="modal-title" id="emailModalLabel">이메일 찾기</h5>
               <button
                 type="button"
                 class="close"
@@ -309,6 +309,10 @@ watch(phoneForEmail, (newValue) => {
 </template>
 <style scoped>
 @import "../assets/colortheme.css";
+#find-buttons button {
+  margin: 0.1rem;
+}
+
 
 .page-wrapper {
   display: flex;
@@ -326,6 +330,7 @@ watch(phoneForEmail, (newValue) => {
 
 .input-group {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
