@@ -1,6 +1,6 @@
 <script setup>
-import KakaoMap from "../components/KakaoMap.vue";
 import { ref } from "vue";
+import {KakaoMap, KakaoMapMarker} from "vue3-kakao-maps";
 import axios from "axios";
 
 // 필터 선택 관련 변수
@@ -27,25 +27,15 @@ let planDateRange = ref({
 });
 </script>
 <script>
-import KakaoMap from "../components/KakaoMap.vue";
 import { start } from "@popperjs/core";
 
 // 테스트 데이터 - 이 좌표가 검색됐다고 합시다.
-const response = [
-  //longtitude , latitude
-  [37.499590490909185, 127.0263723554437],
-  [37.499427948430814, 127.02794423197847],
-  [37.498553760499505, 127.02882598822454],
-  [37.497625593121384, 127.02935713582038],
-  [37.49629291770947, 127.02587362608637],
-  [37.49754540521486, 127.02546694890695],
-  [37.49646391248451, 127.02675574250912],
-];
+const coordinate = {
+  lat: 37.566826,
+  lng: 126.9786567
+};
 
 export default {
-  components: {
-    KakaoMap,
-  },
   data() {
     return {};
   },
@@ -67,8 +57,6 @@ export default {
 
     updateMarkers: function () {
       console.log("부모에서 emit 시도");
-      this.$refs.KakaoMap.displayMarker(response);
-      //좌표뿐만 아니라, 다른 파라미터를 통째로 넘기도록 코드 수정 필요!!
     },
   },
 };
@@ -117,8 +105,11 @@ export default {
         <input type="text" placeholder="검색어 입력" v-model="inputKeyword" />
         <button class="btn button-basic" @click="search">검색하기</button>
       </div>
+      <!-- 여기서부터 카카오맵 -->
       <div id="map-content">
-          <KakaoMap ref="KakaoMap"></KakaoMap>
+        <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true" :width="1600" :height="1000">
+          <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
+        </KakaoMap>
       </div>
     </div>
 
@@ -180,20 +171,24 @@ export default {
   display: flex;
   flex-direction: row;
   padding: 1rem;
-  height: 50rem;
+  height: 46rem;
 }
 #map-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  max-width: 83rem;
+  min-width: 40rem;
   height: 100%;
   align-items: center;
   justify-content: center;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 #search-wrapper {
   width: 100%;
-  height: 8rem;
+  height: 6rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -206,9 +201,10 @@ export default {
 }
 
 #map-content {
+  overflow-x: hidden;
+  overflow-y: hidden;
   width: 100%;
   height: 100%;
-  overflow-y: hidden;
 }
 
 #panel-wrapper {

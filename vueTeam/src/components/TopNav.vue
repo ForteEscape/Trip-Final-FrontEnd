@@ -99,7 +99,7 @@ const registerRoute = "/customer/register";
   width: 100%;
   z-index: 1000;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
-  margin-bottom: 1rem;
+  margin-bottom: 5rem;
 }
 
 .navbar {
