@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import {KakaoMap, KakaoMapMarker} from "vue3-kakao-maps";
+import {KakaoMap, KakaoMapMarker, KakaoMapCustomOverlay} from "vue3-kakao-maps";
 import axios from "axios";
 
 // 필터 선택 관련 변수
@@ -27,6 +27,8 @@ const resultZipCode = ref([]);
 //표기 관련 변수
 const map = ref();
 const markerList = ref([]);
+const markerVisibility = ref([]);
+const markerContent = ref([]);
 
 const onLoadKakaoMap = (mapRef) => {
   console.log("onLoad 호출")
@@ -213,10 +215,15 @@ function search() {
         resultContentId.value.push(currentSpot.contentId);
         resultContentTypeId.value.push(currentSpot.contentTypeId);
         resultFirstImage.value.push(currentSpot.firstImage);
-        resultCoordinate.value.push({key: index+1, lat: currentSpot.latitude, lng: currentSpot.longitude});
+        resultCoordinate.value.push({lat: currentSpot.latitude, lng: currentSpot.longitude});
         resultTel.value.push(currentSpot.tel);
         resultTitle.value.push(currentSpot.title);
         resultZipCode.value.push(currentSpot.zipCode);
+        
+        //마커가 보일지 안보일지를 결정하는 배열
+        markerVisibility.value.push(false);
+        //인포 윈도우를 누르면 생기는 content를 결정함
+        markerContent.value.push(makeContentFor(index));
       }
       //     searchResult.value = response.data;
       //   })
@@ -229,37 +236,67 @@ function search() {
 
 function display(data) {
   console.log("display 호출됨");
-  console.log(markerList.value);
-    // const bounds = new kakao.maps.LatLngBounds();
+    const bounds = new kakao.maps.LatLngBounds();
     for (let marker of data) {
       console.log("마커순회 : " + marker.title);
       const markerItem = {
         lat: marker.longitude, //데이터 오는게 바뀐듯
         lng: marker.latitude,
-        infoWindow: {
-          content: marker.title,
-          visible: false
-        }
+        address: marker.address,
+        contentTypeId: marker.contentTypeId,
+        firstImage: marker.firstImage,
+        coordinate: {lat: marker.latitude, lng: marker.longitude},
+        tel: marker.tel,
+        title: marker.title,
+        zipCode: marker.zipCode
       };
       console.log("lat : " + markerItem.lat)
       console.log("lng : " + markerItem.lng)
       markerList.value.push(markerItem);
-      // bounds.extend(new kakao.maps.LatLng(Number(marker.y), Number(marker.x)));
+      bounds.extend(new kakao.maps.LatLng(Number(marker.longitude), Number(marker.latitude)));
     }
 
     // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-    // map.value?.setBounds(bounds);
+    map.value?.setBounds(bounds);
 };
 
-//마커 클릭 시 인포윈도우의 visible 값을 반전시킵니다
-const onClickMapMarker = (markerItem) => {
-  if (markerItem.infoWindow?.visible !== null && markerItem.infoWindow?.visible !== undefined) {
-    markerItem.infoWindow.visible = !markerItem.infoWindow.visible;
-  } else {
-    markerItem.infoWindow.visible = true;
+function makeContentFor(index) {
+  console.log("makeContent 호출! ..." + index)
+  
+  let imageUrl = resultFirstImage.value[index];
+  if (!imageUrl || imageUrl === "") {
+    imageUrl = "../assets/noImage.png";
   }
-};
 
+  return (` <div
+        style="
+          padding: 10px;
+          background-color: white;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        "
+      >
+        <div style="font-weight: bold; margin-bottom: 5px">${resultTitle.value[index]}</div>
+        <div style="display: flex">
+          <div style="margin-right: 10px">
+            <img src="${imageUrl}" width="73" height="70" />
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-start">
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">${resultAddress.value[index]}</div>
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">우편번호: ${resultZipCode.value[index]}</div>
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">연락처: ${resultTel.value[index]}</div>
+            <div><a href="https://www.kakaocorp.com/main" target="_blank" style="color: blue">상세정보</a></div>
+          </div>
+        </div>
+      </div>`);
+};
+const onClickKakaoMapMarker = (index) => {
+  console.log("마커 클릭 호출..." + index)
+  markerVisibility.value[index] = !markerVisibility.value[index];
+};
 </script>
 
 <template>
@@ -307,16 +344,24 @@ const onClickMapMarker = (markerItem) => {
       </div>
       <!-- 여기서부터 카카오맵 -->
       <div id="map-content">
-        <KakaoMap :lat="33.450705" :lng="126.570667" :draggable="true" :width="1300" :height="700" level="3" @onLoadKakaoMap="onLoadKakaoMap">
+        <KakaoMap :lat="33.450705" :lng="126.570667" :draggable="true" :width="1500" :height="700" level="3" @onLoadKakaoMap="onLoadKakaoMap">
           <KakaoMapMarker
             v-for="(marker, index) in markerList"
-            :key="marker.key === undefined ? index : marker.key"
             :lat="marker.lat"
-            :lng="marker.lng"
-            :infoWindow="marker.infoWindow"
+            :lng="marker.lng"  
             :clickable="true"
-            @onClickKakaoMapMarker="onClickMapMarker(marker)"
-          />
+            @onClickKakaoMapMarker="onClickKakaoMapMarker(index)"
+          >
+        </KakaoMapMarker>
+        <KakaoMapCustomOverlay
+        v-for="(marker, index) in markerList"
+        :lat="marker.lat"
+        :lng="marker.lng"
+        :yAnchor="1.4"
+        :visible= "markerVisibility[index]"
+        :content="markerContent[index]"
+        >
+        </KakaoMapCustomOverlay>
         </KakaoMap>
       </div>
     </div>
