@@ -7,9 +7,9 @@ import TopNav from "./components/TopNav.vue";
   <div class="pageWrapper scrollbar">
     <TopNav></TopNav>
     <main>
-      <!-- <Transition name="fade"> -->
+      <Transition name="fade">
         <RouterView />
-      <!-- </Transition> -->
+      </Transition>
     </main>
   </div>
 </template>
