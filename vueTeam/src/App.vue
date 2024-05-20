@@ -7,15 +7,19 @@ import TopNav from "./components/TopNav.vue";
   <div class="pageWrapper scrollbar">
     <TopNav></TopNav>
     <main>
-      <Transition name="fade">
+      <!-- <Transition name="fade"> -->
         <RouterView />
-      </Transition>
+      <!-- </Transition> -->
     </main>
   </div>
 </template>
 
-<style>
+<style >
 @import "./assets/colortheme.css";
+
+.pageWrapper {
+  width: 100vw;
+}
 
 * {
   font-family: "Gothic A1", sans-serif;
@@ -63,6 +67,6 @@ header {
 }
 
 main {
-  margin-top: 6rem;
+  margin-top: 5rem;
 }
 </style>
