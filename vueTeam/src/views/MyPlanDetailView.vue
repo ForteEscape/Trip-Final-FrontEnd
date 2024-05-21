@@ -178,7 +178,7 @@ function decreaseCurDay() {
     <div>
       <KakaoMap :lat="33.450705" :lng="126.570667" :width="500" :height="400">
         <KakaoMapMarker
-          v-for="marker in testCoordinate[curDayIndex]"
+          v-for="marker in testResponse.data.attractions[curDayIndex]"
           :key="marker.id"
           :lat="marker.latitude"
           :lng="marker.longitude"
@@ -188,6 +188,22 @@ function decreaseCurDay() {
         <button @click="decreaseCurDay" class="btn button-basic">◀</button>
         <span>{{ curDayIndex + 1 }}일차</span>
         <button @click="increaseCurDay" class="btn button-basic">▶</button>
+      </div>
+
+      <div id="attraction-details">
+        <h2>{{ testCoordinate[curDayIndex].title }}</h2>
+        <p>
+          <strong>주소:</strong>
+          {{ testCoordinate[curDayIndex].address }}
+        </p>
+        <p>
+          <strong>위도:</strong>
+          {{ testCoordinate[curDayIndex].latitude }}
+        </p>
+        <p>
+          <strong>경도:</strong>
+          {{ testCoordinate[curDayIndex].longitude }}
+        </p>
       </div>
     </div>
   </div>
