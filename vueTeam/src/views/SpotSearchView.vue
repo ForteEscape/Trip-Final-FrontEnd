@@ -1,5 +1,6 @@
-<script setup>
+etSido<script setup>
 import { ref, watch } from "vue";
+import { onMounted } from "vue";
 import {
   KakaoMap,
   KakaoMapMarker,
@@ -7,15 +8,68 @@ import {
 } from "vue3-kakao-maps";
 import axios from "axios";
 
+
+onMounted(() => {
+  console.log("onMounted!");
+  getSido();
+  getGungu(1);
+})
+
+// 시도군구 불러오는 통신 함수
+const url = "https://b6b1-175-209-87-181.ngrok-free.app"
+async function getSido() {
+  console.log("시도 불러오기");
+  await axios
+    .get(url + "/attraction/cities", {headers:{'Content-Type': `application/json`,'ngrok-skip-browser-warning': '69420'}})
+    .then((response) => {
+        console.log("시도 불러오기 성공", response.data);
+        console.log(response.data.data.length)
+        for(var index=0; index<response.data.data.length; index++) {
+          console.log(response.data.data[index])
+          sidoOptions.value.push(response.data.data[index]);
+        }
+      })
+    .catch((error) => {
+        alert("시도 불러오기 실패" + error);
+      });
+}
+
+async function getGungu(sidoValue) {
+  console.log("군구 불러오기");
+  await axios
+    .get(url + `/attraction/cities/${sidoValue}/towns`, {headers:{'Content-Type': `application/json`,'ngrok-skip-browser-warning': '69420'}})
+    .then((response) => {
+        console.log("군구 불러오기 성공", response.data);
+        console.log(response.data.data.length)
+        gunguOptions.value = [];
+        for(var index=0; index<response.data.data.length; index++) {
+          console.log(response.data.data[index])
+          gunguOptions.value.push(response.data.data[index]);
+        }
+      })
+    .catch((error) => {
+        alert("군구 불러오기 실패" + error);
+      });
+}
+
 // 필터 선택 관련 변수
-const sidoOptions = ["1", "2", "3"];
-const gunguOptions = ["1", "2", "3"];
-const categoryOptions = ["1", "2", "3"];
+const sidoOptions = ref([]);
+const gunguOptions = ref([]);
+const contentTypeOptions = [
+  {contentTypeName: "쇼핑", contentTypeCode: 38},
+  {contentTypeName: "숙박", contentTypeCode: 32},
+  {contentTypeName: "관광지", contentTypeCode: 12},
+  {contentTypeName: "행사/축제", contentTypeCode: 15},
+  {contentTypeName: "문화시설", contentTypeCode: 14},
+  {contentTypeName: "음식점", contentTypeCode: 39},
+  {contentTypeName: "레포츠", contentTypeCode: 28},
+  {contentTypeName: "여행코스", contentTypeCode: 25},
+];
 
 //검색 필터 관련 변수
-const selectedSidoCode = ref(sidoOptions[0]);
-const selectedGunguCode = ref(gunguOptions[0]);
-const selectedCategory = ref(categoryOptions[0]);
+const selectedSidoCode = ref(1);
+const selectedGunguCode = ref(1);
+const selectedContentTypeCode = ref(12);
 const inputKeyword = ref("");
 
 //검색 결과 관련 변수
@@ -213,8 +267,14 @@ const response = {
 
 // 여기서부터 함수 구역 **************************************
 function search() {
-  console.log();
   console.log("검색 시도...");
+  const body = {
+    selectedSidoCode,
+    selectedGunguCode,
+    selectedContentTypeCode,
+    inputKeyword
+  }
+  console.log(body);
   // axios
   //   .get(url + "/여기에 검색 엔드포인트", {})
   //   .then((response) => {
@@ -337,20 +397,7 @@ function addMarkerToPlan (curMarkerIndex) {
   console.log(places.value);
 }
 
-// 날짜간의 간격을 계산하여 planSize에 부여
-watch(planDateRange, () => {
-  const startDate = new Date(planDateRange.value.start);
-  const endDate = new Date(planDateRange.value.end);
-  const diffInMilliseconds = endDate.getTime() - startDate.getTime();
-  const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)); // 밀리초를 일 단위로 변환
-  planSize.value = diffInDays;
-  console.log("날짜 간격은..." + planSize.value);
-  
-  //선택된 날짜만큼 일정 배열 추가
-  while(places.value.length < planSize.value+1) {
-    places.value.push([]);
-  }
-});
+
 
 // 여행 계획을 전송합니다... 같이 갈 사람을 초대하는 모달로 연결됩니다.
 function submitPlan() {
@@ -396,6 +443,28 @@ function deleteMarkerFromPlan(curDayIndex, index) {
   }
 }
 
+// 날짜간의 간격을 계산하여 planSize에 부여
+watch(planDateRange, () => {
+  const startDate = new Date(planDateRange.value.start);
+  const endDate = new Date(planDateRange.value.end);
+  const diffInMilliseconds = endDate.getTime() - startDate.getTime();
+  const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)); // 밀리초를 일 단위로 변환
+  planSize.value = diffInDays;
+  console.log("날짜 간격은..." + planSize.value);
+  
+  //선택된 날짜만큼 일정 배열 추가
+  while(places.value.length < planSize.value+1) {
+    places.value.push([]);
+  }
+});
+
+function sidoChange(data) {
+  selectedSidoCode.value = data.target.value;
+  console.log(selectedSidoCode.value);
+
+  getGungu(selectedSidoCode.value);
+}
+
 </script>
 
 <template>
@@ -403,25 +472,24 @@ function deleteMarkerFromPlan(curDayIndex, index) {
     <div id="map-wrapper">
       <div id="search-wrapper">
         <!-- 시/도 선택지 -->
-        <select v-model="selectedSidoCode">
+        <select v-model="selectedSidoCode" @change="sidoChange">
           <option disabled value="">시/도 선택</option>
-          <option v-for="sidoCode in sidoOptions" :key="sidoCode" :value="sidoCode">
-            {{ sidoCode }}
+          <option v-for="sidoOption in sidoOptions" :key="sidoOption.sidoCode" :value="sidoOption.sidoCode">
+            {{ sidoOption.sidoName }}
           </option>
         </select>
         <!-- 구/군 선택지 -->
         <select v-model="selectedGunguCode">
           <option disabled value="">구/군 선택</option>
-          <option v-for="gunguCode in gunguOptions" :key="gunguCode" :value="gunguCode">
-            {{ gunguCode }}
+          <option v-for="gunguOption in gunguOptions" :key="gunguOption.gugunCode" :value="gunguOption.gugunCode">
+            {{ gunguOption.gugunName }}
           </option>
         </select>
-
-        <!-- 카테고리 선택지 -->
-        <select v-model="selectedCategory">
-          <option disabled value="">유형 선택</option>
-          <option v-for="category in categoryOptions" :key="category" :value="category">
-            {{ category }}
+        <!-- 타입 선택지 -->
+        <select v-model="selectedContentTypeCode">
+          <option disabled value="">분류 선택</option>
+          <option v-for="contentTypeOption in contentTypeOptions" :key="contentTypeOption.contentTypeCode" :value="contentTypeOption.contentTypeCode">
+            {{ contentTypeOption.contentTypeName }}
           </option>
         </select>
 
