@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://f74f-175-209-87-181.ngrok-free.app";
+const url = "https://c368-183-101-167-192.ngrok-free.app";
 
 const profile = ref(null);
 const email = ref("");
@@ -41,7 +41,9 @@ onMounted(() => {
     axios
       .get(url + "/user", {
         headers: {
-          Authorization: `Bearer ${accessToken}`,'Content-Type': `application/json`,'ngrok-skip-browser-warning': '69420'
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": `application/json`,
+          "ngrok-skip-browser-warning": "69420",
         },
       })
       .then((response) => {

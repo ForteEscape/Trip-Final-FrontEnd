@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://f18a-175-209-87-181.ngrok-free.app";
+const url = "https://c368-183-101-167-192.ngrok-free.app";
 
 const email = ref("");
 const password = ref("");
@@ -311,7 +311,6 @@ watch(phoneForEmail, (newValue) => {
 #find-buttons button {
   margin: 0.1rem;
 }
-
 
 .page-wrapper {
   display: flex;
