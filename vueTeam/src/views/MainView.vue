@@ -88,10 +88,10 @@ function getCount() {}
       추억을 공유하고 있어요!
     </p>
 
-    <div class="card-zone">
+    <!-- <div class="card-zone">
       <div class="card-row">카드 자리 * 4</div>
       <div class="card-row">카드 자리 * 4</div>
-    </div>
+    </div> -->
   </div>
 </template>
 

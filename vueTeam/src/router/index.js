@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '@/views/MainView.vue'
-import BoardView from '@/views/BoardView.vue'
-import BoardDetailView from '@/views/BoardDetailView.vue'
+import HotBoardDetailView from '@/views/HotBoardDetailView.vue'
 import MyPageView from '@/views/MyPageView.vue'
 import LoginView from '@/views/LoginView.vue'
-import SpotSearchView from '@/views/SpotSearchView.vue'
-import BoardWriteView from '@/views/BoardWriteView.vue'
+import HotBoardWriteView from '@/views/HotBoardWriteView.vue'
 import CustomerRegisterView from '@/views/CustomerRegisterView.vue'
 import MyPlanView from '@/views/MyPlanView.vue'
 import MyPlanDetailView from '@/views/MyPlanDetailView.vue'
+import MakePlanView from '@/views/MakePlanView.vue'
+import HotBoardView from '@/views/HotBoardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,11 +17,6 @@ const router = createRouter({
       path: '/',
       name: 'main',
       component: MainView
-    },
-    {
-      path: '/board',
-      name: 'board',
-      component: BoardView
     },
     {
       path: '/myPage',
@@ -34,19 +29,19 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/detail/:id',
-      name: 'detail',
-      component: BoardDetailView
+      path: '/hotBoard',
+      name: 'hotboard',
+      component: HotBoardView
     },
     {
-      path: '/spotSearch',
-      name: 'spotsearch',
-      component: SpotSearchView
+      path: '/hotBoard/detail/:id',
+      name: 'hotboarddetail',
+      component: HotBoardDetailView
     },
     {
-      path: '/boardWrite',
-      name: 'boardwrite',
-      component: BoardWriteView
+      path: '/hotBoardWrite',
+      name: 'hotboardwrite',
+      component: HotBoardWriteView
     },
     {
       path: '/customer/register',
@@ -54,13 +49,18 @@ const router = createRouter({
       component: CustomerRegisterView
     },
     {
-      path: '/myplan',
+      path: '/makePlan',
+      name: 'makeplan',
+      component: MakePlanView
+    },
+    {
+      path: '/myPlan',
       name: 'myplan',
       component: MyPlanView
     },
     {
-      path: '/myplan/detail',
-      name: 'myplan',
+      path: '/myPlan/detail/:id',
+      name: 'myplandetail',
       component: MyPlanDetailView
     },
   ]

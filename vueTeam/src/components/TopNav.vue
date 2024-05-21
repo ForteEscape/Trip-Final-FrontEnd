@@ -3,11 +3,12 @@ import { RouterLink, useRouter } from "vue-router";
 
 const router = useRouter();
 const homeRoute = "/";
-const boardRoute = "/board";
+const hotBoardRoute = "/hotBoard";
 const myPageRoute = "/myPage";
 const loginRoute = "/login";
-const searchRoute = "/spotSearch";
 const registerRoute = "/customer/register";
+const myPlanRoute = "/myPlan"
+const makePlanRoute = "/makePlan";
 </script>
 
 <template>
@@ -38,13 +39,31 @@ const registerRoute = "/customer/register";
                 >홈</RouterLink
               >
             </li>
-            <li class="nav-item">
-              <RouterLink
-                :to="boardRoute"
-                class="nav-link active"
-                aria-current="page"
-                >핫플레이스 게시판</RouterLink
+
+            <!-- 게시판 관련 -->
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
+                게시판
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink class="dropdown-item" :to="hotBoardRoute" 
+                    >핫플레이스 게시판</RouterLink
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <RouterLink class="dropdown-item" :to="hotBoardRoute"
+                    >공지 사항</RouterLink
+                  >
+                </li>
+              </ul>
             </li>
 
             <!-- 여행지 관련 -->
@@ -60,20 +79,14 @@ const registerRoute = "/customer/register";
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <RouterLink class="dropdown-item" :to="searchRoute" 
+                  <RouterLink class="dropdown-item" :to="makePlanRoute" 
                     >여행 설계</RouterLink
                   >
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <RouterLink class="dropdown-item" :to="loginRoute"
-                    >로그인</RouterLink
-                  >
-                </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <RouterLink class="dropdown-item" :to="registerRoute"
-                    >회원 가입</RouterLink
+                  <RouterLink class="dropdown-item" :to="myPlanRoute"
+                    >내 여행 계획</RouterLink
                   >
                 </li>
               </ul>
@@ -146,5 +159,10 @@ const registerRoute = "/customer/register";
 
 .nav-item:hover {
   background-color: rgb(255, 60, 0);
+}
+
+ul *{
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
 }
 </style>

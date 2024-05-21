@@ -26,7 +26,7 @@ onMounted(() => {
 })
 
 // 시도군구 불러오는 통신 함수
-const url = "https://f74f-175-209-87-181.ngrok-free.app"
+const url = "https://f18a-175-209-87-181.ngrok-free.app"
 async function getSido() {
   console.log("시도 불러오기");
   await axios
@@ -241,6 +241,9 @@ function makeContentFor(index) {
     </div>`;
 }
 
+function test() {
+  alert("호출됨!");
+}
 const onClickKakaoMapMarker = (index) => {
   console.log("마커 클릭 호출..." + index);
   markerInfoVisibility.value[index] = !markerInfoVisibility.value[index];
@@ -297,11 +300,11 @@ function submitPlan() {
       })
       .then((response) => {
         console.log(response.data.data)
-        alert("굿")
+
+        
       })
       .catch((error)=> {
         console.log(error)
-        alert("낫굿")
       })
 }
 

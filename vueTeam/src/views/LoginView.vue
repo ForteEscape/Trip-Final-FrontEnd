@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://f74f-175-209-87-181.ngrok-free.app";
+const url = "https://f18a-175-209-87-181.ngrok-free.app";
 
 const email = ref("");
 const password = ref("");
@@ -20,7 +20,6 @@ async function tryLogin() {
     password: password.value,
   };
   try {
-    // const url = "https://412306c0976506.lhr.life";
     console.log("로그인 시도 : " + email + "  " + password);
 
     await axios
