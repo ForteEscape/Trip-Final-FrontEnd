@@ -19,20 +19,22 @@ const selectedCategory = ref(categoryOptions[0]);
 const inputKeyword = ref("");
 
 //검색 결과 관련 변수
-const resultAddress = ref([]);
-const resultContentId = ref([]);
-const resultContentTypeId = ref([]);
-const resultFirstImage = ref([]);
-const resultCoordinate = ref([]);
-const resultTel = ref([]);
-const resultTitle = ref([]);
-const resultZipCode = ref([]);
-
-//표기 관련 변수
 const map = ref();
 const markerList = ref([]);
-const markerVisibility = ref([]);
-const markerContent = ref([]);
+const markerInfoVisibility = ref([]);
+const markerInfoContent = ref([]);
+
+const markerAddress = ref([]);
+const markerContentId = ref([]);
+const markerContentTypeId = ref([]);
+const markerFirstImage = ref([]);
+const markerCoordinate = ref([]);
+const markerTel = ref([]);
+const markerTitle = ref([]);
+const markerZipCode = ref([]);
+const curMarkerIndex = ref(-1);
+
+
 
 const onLoadKakaoMap = (mapRef) => {
   console.log("onLoad 호출");
@@ -43,14 +45,14 @@ const onLoadKakaoMap = (mapRef) => {
 //저장할 여행플랜 관련 변수
 // 반환해야함 : planName + startDate(0000-00-00형태) + endDate + places[[1일차 contentId],[],[]...] + members[친구 코드]
 const planName = ref("");
-const places = ref([[11111, 22222], [33333], [44444, 55555, 66666]]);
+const places = ref([[],[]]);
 const members = ref([]);
 const planSize = ref(1); // 여행 날짜수
 const planDateRange = ref({
   start: "2024-01-01",
   end: "2024-01-02",
 });
-const curDay = ref(0);
+const curDayIndex = ref(0);
 
 // 테스트 데이터 - 이 좌표가 검색됐다고 합시다.
 const response = {
@@ -220,28 +222,30 @@ function search() {
 
   for (var index = 0; index < response.data.length; index++) {
     var currentSpot = response.data[index];
-    resultAddress.value.push(currentSpot.address);
-    resultContentId.value.push(currentSpot.contentId);
-    resultContentTypeId.value.push(currentSpot.contentTypeId);
-    resultFirstImage.value.push(currentSpot.firstImage);
-    resultCoordinate.value.push({
+
+    markerAddress.value.push(currentSpot.address);
+    markerContentId.value.push(currentSpot.contentId);
+    markerContentTypeId.value.push(currentSpot.contentTypeId);
+    markerFirstImage.value.push(currentSpot.firstImage);
+    markerCoordinate.value.push({
       lat: currentSpot.latitude,
       lng: currentSpot.longitude,
     });
-    resultTel.value.push(currentSpot.tel);
-    resultTitle.value.push(currentSpot.title);
-    resultZipCode.value.push(currentSpot.zipCode);
+    markerTel.value.push(currentSpot.tel);
+    markerTitle.value.push(currentSpot.title);
+    markerZipCode.value.push(currentSpot.zipCode);
 
     //마커가 보일지 안보일지를 결정하는 배열
-    markerVisibility.value.push(false);
+    markerInfoVisibility.value.push(false);
     //인포 윈도우를 누르면 생기는 content를 결정함
-    markerContent.value.push(makeContentFor(index));
+    markerInfoContent.value.push(makeContentFor(index));
   }
   //   })
   //   .catch((error) => {
   //     console.log(error);
   //   });
   console.log("result 배열들 채우기 완료");
+
   display(response.data);
 }
 
@@ -249,7 +253,6 @@ function display(data) {
   console.log("display 호출됨");
   const bounds = new kakao.maps.LatLngBounds();
   for (let marker of data) {
-    console.log("마커순회 : " + marker.title);
     const markerItem = {
       lat: marker.longitude, //데이터 오는게 바뀐듯
       lng: marker.latitude,
@@ -261,8 +264,6 @@ function display(data) {
       title: marker.title,
       zipCode: marker.zipCode,
     };
-    console.log("lat : " + markerItem.lat);
-    console.log("lng : " + markerItem.lng);
     markerList.value.push(markerItem);
     bounds.extend(
       new kakao.maps.LatLng(Number(marker.longitude), Number(marker.latitude))
@@ -274,43 +275,67 @@ function display(data) {
 }
 
 function makeContentFor(index) {
-  console.log("makeContent 호출! ..." + index);
+  console.log("makeContent 호출..." + index + "번 마커에 대해 생성");
 
-  let imageUrl = resultFirstImage.value[index];
+  let imageUrl = markerFirstImage.value[index];
   if (!imageUrl || imageUrl === "") {
     imageUrl = "../assets/noImage.png";
   }
 
-  return ` <div
-        style="
-          padding: 10px;
-          background-color: white;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        "
-      >
-        <div style="font-weight: bold; margin-bottom: 5px">${resultTitle.value[index]}</div>
-        <div style="display: flex">
-          <div style="margin-right: 10px">
-            <img src="${imageUrl}" width="73" height="70" />
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: flex-start">
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">${resultAddress.value[index]}</div>
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">우편번호: ${resultZipCode.value[index]}</div>
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">연락처: ${resultTel.value[index]}</div>
-            <div><a href="https://www.kakaocorp.com/main" target="_blank" style="color: blue">상세정보</a></div>
-          </div>
+  return `
+    <div
+      style="
+        padding: 10px;
+        background-color: white;
+        border: 2px solid var(--trip-color-one);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      "
+    >
+      <div style="font-weight: bold; margin-bottom: 5px">${markerTitle.value[index]}</div>
+      <div style="display: flex">
+        <div style="margin-right: 10px">
+          <img src="${imageUrl}" width="73" height="70" />
         </div>
-      </div>`;
+        <div style="display: flex; flex-direction: column; align-items: flex-start">
+          <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">${markerAddress.value[index]}</div>
+        </div>
+      </div>
+    </div>`;
 }
 
 const onClickKakaoMapMarker = (index) => {
   console.log("마커 클릭 호출..." + index);
-  markerVisibility.value[index] = !markerVisibility.value[index];
+  markerInfoVisibility.value[index] = !markerInfoVisibility.value[index];
+  curMarkerIndex.value = index;
 };
+
+function addMarkerToPlan (curMarkerIndex) {
+    // 경로 정보창에 마커 정보 등록
+    console.log("선택된 마커 인덱스 : " + curMarkerIndex)
+    console.log((curDayIndex.value+1) + "일차 일정에 마커 추가");
+
+    console.log(markerTitle.value[curMarkerIndex]);
+
+    const pickedMarker = {
+      address: markerAddress.value[curMarkerIndex],
+      contentId: markerContentId.value[curMarkerIndex],
+      contentTypeId: markerContentTypeId.value[curMarkerIndex],
+      firstImage: markerFirstImage.value[curMarkerIndex],
+      coordinate: markerCoordinate.value[curMarkerIndex],
+      tel: markerTel.value[curMarkerIndex],
+      title: markerTitle.value[curMarkerIndex],
+      zipCode: markerZipCode.value[curMarkerIndex]
+    };
+  console.log("추가할 일자 인덱스 : " + curDayIndex.value)
+  console.log("추가할 정보 : " + pickedMarker.address)
+  places.value[curDayIndex.value].push(pickedMarker);
+
+  console.log("선택된 장소들...")
+  console.log(places.value);
+}
 
 // 날짜간의 간격을 계산하여 planSize에 부여
 watch(planDateRange, () => {
@@ -320,6 +345,11 @@ watch(planDateRange, () => {
   const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)); // 밀리초를 일 단위로 변환
   planSize.value = diffInDays;
   console.log("날짜 간격은..." + planSize.value);
+  
+  //선택된 날짜만큼 일정 배열 추가
+  while(places.value.length < planSize.value+1) {
+    places.value.push([]);
+  }
 });
 
 // 여행 계획을 전송합니다... 같이 갈 사람을 초대하는 모달로 연결됩니다.
@@ -328,7 +358,7 @@ function submitPlan() {
     planName: planName.value,
     startDate: planDateRange.value.start,
     endDate: planDateRange.value.end,
-    places: places.value.map((place) => place.content),
+    places: places.value,
     members: members.value,
   };
 
@@ -337,14 +367,14 @@ function submitPlan() {
 
 function increaseCurDay() {
   console.log(planSize.value);
-  if (curDay.value + 1 <= planSize.value) {
-    curDay.value++;
+  if (curDayIndex.value + 1 <= planSize.value) {
+    curDayIndex.value++;
   }
 }
 
 function decreaseCurDay() {
-  if (curDay.value + 1 > 1) {
-    curDay.value--;
+  if (curDayIndex.value + 1 > 1) {
+    curDayIndex.value--;
   }
 }
 
@@ -359,6 +389,13 @@ function convertDateFormat(dateString) {
 
   return `${year}-${month}-${day}`;
 }
+
+function deleteMarkerFromPlan(curDayIndex, index) {
+  if (curDayIndex >= 0 && curDayIndex < places.value.length) {
+    places.value[curDayIndex].splice(index, 1);
+  }
+}
+
 </script>
 
 <template>
@@ -368,22 +405,14 @@ function convertDateFormat(dateString) {
         <!-- 시/도 선택지 -->
         <select v-model="selectedSidoCode">
           <option disabled value="">시/도 선택</option>
-          <option
-            v-for="sidoCode in sidoOptions"
-            :key="sidoCode"
-            :value="sidoCode"
-          >
+          <option v-for="sidoCode in sidoOptions" :key="sidoCode" :value="sidoCode">
             {{ sidoCode }}
           </option>
         </select>
         <!-- 구/군 선택지 -->
         <select v-model="selectedGunguCode">
           <option disabled value="">구/군 선택</option>
-          <option
-            v-for="gunguCode in gunguOptions"
-            :key="gunguCode"
-            :value="gunguCode"
-          >
+          <option v-for="gunguCode in gunguOptions" :key="gunguCode" :value="gunguCode">
             {{ gunguCode }}
           </option>
         </select>
@@ -391,11 +420,7 @@ function convertDateFormat(dateString) {
         <!-- 카테고리 선택지 -->
         <select v-model="selectedCategory">
           <option disabled value="">유형 선택</option>
-          <option
-            v-for="category in categoryOptions"
-            :key="category"
-            :value="category"
-          >
+          <option v-for="category in categoryOptions" :key="category" :value="category">
             {{ category }}
           </option>
         </select>
@@ -406,31 +431,13 @@ function convertDateFormat(dateString) {
       </div>
       <!-- 여기서부터 카카오맵 -->
       <div id="map-content">
-        <KakaoMap
-          :lat="33.450705"
-          :lng="126.570667"
-          :draggable="true"
-          :width="1500"
-          :height="700"
-          level="3"
-          @onLoadKakaoMap="onLoadKakaoMap"
-        >
-          <KakaoMapMarker
-            v-for="(marker, index) in markerList"
-            :lat="marker.lat"
-            :lng="marker.lng"
-            :clickable="true"
-            @onClickKakaoMapMarker="onClickKakaoMapMarker(index)"
-          >
+        <KakaoMap :lat="33.450705" :lng="126.570667" :draggable="true" :width="1500" :height="700" level="3"
+          @onLoadKakaoMap="onLoadKakaoMap">
+          <KakaoMapMarker v-for="(marker, index) in markerList" :lat="marker.lat" :lng="marker.lng" :clickable="true"
+            @onClickKakaoMapMarker="onClickKakaoMapMarker(index)">
           </KakaoMapMarker>
-          <KakaoMapCustomOverlay
-            v-for="(marker, index) in markerList"
-            :lat="marker.lat"
-            :lng="marker.lng"
-            :yAnchor="1.4"
-            :visible="markerVisibility[index]"
-            :content="markerContent[index]"
-          >
+          <KakaoMapCustomOverlay v-for="(marker, index) in markerList" :lat="marker.lat" :lng="marker.lng"
+            :yAnchor="1.4" :visible="markerInfoVisibility[index]" :content="markerInfoContent[index]">
           </KakaoMapCustomOverlay>
         </KakaoMap>
       </div>
@@ -441,11 +448,7 @@ function convertDateFormat(dateString) {
       <div id="user-panel">
         <h5>제목</h5>
         <div id="panel-title">
-          <input
-            type="text"
-            placeholder="여행의 이름을 적어주세요."
-            v-model="planName"
-          />
+          <input type="text" placeholder="여행의 이름을 적어주세요." v-model="planName" />
         </div>
 
         <hr />
@@ -459,42 +462,41 @@ function convertDateFormat(dateString) {
           <div class="date-show shadow">
             종료일: {{ convertDateFormat(planDateRange.end) }}
           </div>
-          <div id="size-info">🛫 {{ planSize + 1 }}일 짜리 여행입니다! 🛫</div>
+          <div class="size-info">🛫 {{ planSize + 1 }}일 짜리 여행입니다! 🛫</div>
           <div style="margin-top: 0.5rem">
-            <VDatePicker
-              color="orange"
-              v-model.range="planDateRange"
-              mode="string"
-            />
+            <VDatePicker color="orange" v-model.range="planDateRange" mode="string" />
           </div>
         </div>
 
         <hr />
 
         <h5>경로</h5>
+        <div class="size-info">현재 선택된 여행지</div>
+        <div id="add-wrapper" class="shadow" v-if="curMarkerIndex!== -1">
+          <img :src="markerFirstImage[curMarkerIndex]" alt="없음">
+          <div>
+            <div>{{ markerTitle[curMarkerIndex] }}</div>
+            <div>{{ markerAddress[curMarkerIndex] }}</div>
+            <hr>
+            <button @click="addMarkerToPlan(curMarkerIndex)" class="btn button-basic">추가하기⭐</button>
+          </div>
+        </div>
         <div id="day-select">
           <button @click="decreaseCurDay" class="btn button-basic">◀</button>
-          <span>{{ curDay + 1 }}일차</span>
+          <span>{{ curDayIndex + 1 }}일차</span>
           <button @click="increaseCurDay" class="btn button-basic">▶</button>
         </div>
         <div id="panel-route">
-          <div
-            class="panel-route-content"
-            v-for="(place, index) in places[curDay]"
-            :key="index"
-          >
-            <ul>
-              <li v-for="(item, itemIndex) in place.content" :key="itemIndex">
-                {{ item.title }}
-              </li>
-            </ul>
+          <div class="panel-route-content shadow" v-for="(place, index) in places[curDayIndex]" :key="index" @click="">
+            <img :src="place.firstImage" alt="없음">
+            <div>
+              <div>{{ place.title }}</div>
+              <hr>
+              <button @click="deleteMarkerFromPlan(curDayIndex, index)" class="btn btn-secondary">삭제하기</button>
+            </div>
           </div>
         </div>
-        <button
-          class="btn button-basic"
-          style="margin-top: 2rem"
-          @click="submitPlan"
-        >
+        <button class="btn button-basic" style="margin-top: 2rem" @click="submitPlan">
           여행플랜 제출
         </button>
       </div>
@@ -521,6 +523,7 @@ function convertDateFormat(dateString) {
   padding: 1rem;
   height: 46rem;
 }
+
 #map-wrapper {
   flex: 1;
   display: flex;
@@ -615,19 +618,33 @@ hr {
   height: 20rem;
   min-height: 20rem;
   overflow: auto;
-  padding: 0.2rem;
+  padding: 0.4rem;
   border-radius: 4px;
   border: 1px solid var(--trip-color-six);
 }
 
 .panel-route-content {
   width: 100%;
-  height: 5rem;
-  display: flex;
-  flex-direction: column;
-  padding: 0.2rem;
   margin-bottom: 0.5rem;
   border-radius: 4px;
+}
+
+.panel-route-content {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panel-route-content img {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 8px;
+  border: 1px solid var(--trip-color-six);
+  background-color: var(--trip-color-six);
+}
+
+.panel-route-content hr {
 }
 
 #day-select {
@@ -642,28 +659,76 @@ hr {
   font-size: 0.5rem;
 }
 
-#size-info {
+.size-info {
   font-size: 0.8rem;
   color: var(--trip-color-five);
   border-bottom: 2px dashed var(--trip-color-one);
+  margin-bottom: 0.5rem;
 }
 
 /* 투명 스크롤바 설정 */
 #panel-route::-webkit-scrollbar {
-  display: none; /* 웹킷 브라우저용 */
+  display: none;
+  /* 웹킷 브라우저용 */
 }
 
 #panel-route {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 #user-panel::-webkit-scrollbar {
-  display: none; /* 웹킷 브라우저용 */
+  display: none;
+  /* 웹킷 브라우저용 */
 }
 
 #user-panel {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
+
+#add-wrapper {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  width: 92%;
+  height: 10rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+  gap: 0.5rem;
+}
+
+#add-wrapper img {
+  min-height: 4rem;
+  max-height: 4rem;
+  min-width: 4rem;
+  max-width: 4rem;
+  border-radius: 8px;
+  background-color: var(--trip-color-six);
+  border: 1px solid var(--trip-color-six);
+}
+
+#add-wrapper div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+#add-wrapper div div {
+  font-size: 0.8rem;
+}
+
+#add-wrapper div button {
+  padding: none;
+}
+
+
 </style>

@@ -49,12 +49,12 @@ header {
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background: var(--trip-color-two); /* 스크롤바 색상 */
-  border-radius: 2px; /* 스크롤바 둥근 테두리 */
+  background: var(--trip-color-five); /* 스크롤바 색상 */
+  border-radius: 8px; /* 스크롤바 둥근 테두리 */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-  background: var(--trip-color-three);
+  background: var(--trip-color-six);
 }
 
 .fade-enter-active,
