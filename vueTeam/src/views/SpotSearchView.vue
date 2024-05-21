@@ -1,6 +1,7 @@
 etSido<script setup>
 import { ref, watch } from "vue";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import {
   KakaoMap,
   KakaoMapMarker,
@@ -8,15 +9,24 @@ import {
 } from "vue3-kakao-maps";
 import axios from "axios";
 
+const router = useRouter();
 
 onMounted(() => {
+
+  const accessToken = localStorage.getItem("accessToken");
   console.log("onMounted!");
   getSido();
   getGungu(1);
+
+  
+  if (!accessToken) {
+    alert("로그인이 필요합니다");
+    router.push({ name: "login" });
+  } 
 })
 
 // 시도군구 불러오는 통신 함수
-const url = "https://b6b1-175-209-87-181.ngrok-free.app"
+const url = "https://f74f-175-209-87-181.ngrok-free.app"
 async function getSido() {
   console.log("시도 불러오기");
   await axios
@@ -100,6 +110,7 @@ const onLoadKakaoMap = (mapRef) => {
 // 반환해야함 : planName + startDate(0000-00-00형태) + endDate + places[[1일차 contentId],[],[]...] + members[친구 코드]
 const planName = ref("");
 const places = ref([[],[]]);
+const placesForSubmit = ref([[],[]]);
 const members = ref([]);
 const planSize = ref(1); // 여행 날짜수
 const planDateRange = ref({
@@ -108,214 +119,76 @@ const planDateRange = ref({
 });
 const curDayIndex = ref(0);
 
-// 테스트 데이터 - 이 좌표가 검색됐다고 합시다.
-const response = {
-  state: 200,
-  result: "success",
-  message: "검색 성공",
-  data: [
-    {
-      contentId: 126486,
-      contentTypeId: 12,
-      title: "도산공원",
-      address: "서울특별시 강남구 도산대로45길 20",
-      zipCode: "06020",
-      tel: "",
-      firstImage:
-        "http://tong.visitkorea.or.kr/cms/resource/60/2678560_image2_1.jpg",
-      latitude: 127.0338117034,
-      longitude: 37.5214632538,
-    },
-    {
-      contentId: 127269,
-      contentTypeId: 12,
-      title: "청담근린공원",
-      address: "서울특별시 강남구 영동대로131길 26 (청담동)",
-      zipCode: "06073",
-      tel: "",
-      firstImage:
-        "http://tong.visitkorea.or.kr/cms/resource/00/204200_image2_1.jpg",
-      latitude: 127.0526683289,
-      longitude: 37.5211580726,
-    },
-    {
-      contentId: 1602451,
-      contentTypeId: 12,
-      title: "대모산도시자연공원",
-      address: "서울특별시 강남구 광평로10길 30-71 (일원동)",
-      zipCode: "06359",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0750897453,
-      longitude: 37.4775857564,
-    },
-    {
-      contentId: 2733970,
-      contentTypeId: 12,
-      title: "대치유수지체육공원",
-      address: "서울특별시 강남구 역삼로90길 43 (대치동)",
-      zipCode: "06190",
-      tel: "",
-      firstImage:
-        "http://tong.visitkorea.or.kr/cms/resource/90/2779090_image2_1.jpg",
-      latitude: 127.0635595572,
-      longitude: 37.5016327582,
-    },
-    {
-      contentId: 2751890,
-      contentTypeId: 12,
-      title: "은곡마을공원",
-      address: "서울특별시 강남구 세곡동 369-3",
-      zipCode: "",
-      tel: "",
-      firstImage: "",
-      latitude: 127.1004821483,
-      longitude: 37.4681123124,
-    },
-    {
-      contentId: 2752525,
-      contentTypeId: 12,
-      title: "마루공원",
-      address: "서울특별시 강남구 개포로109길 74 (개포동)",
-      zipCode: "06334",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0801415433,
-      longitude: 37.4959364949,
-    },
-    {
-      contentId: 2752545,
-      contentTypeId: 12,
-      title: "역삼개나리공원",
-      address: "서울특별시 강남구 논현로79길 24 (역삼동)",
-      zipCode: "06237",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0363010397,
-      longitude: 37.4976521744,
-    },
-    {
-      contentId: 2752552,
-      contentTypeId: 12,
-      title: "신사공원",
-      address: "서울특별시 강남구 논현로189길 57 (압구정동)",
-      zipCode: "06000",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0212793589,
-      longitude: 37.5268429594,
-    },
-    {
-      contentId: 2754732,
-      contentTypeId: 12,
-      title: "율현공원",
-      address: "서울특별시 강남구 밤고개로24길 24 (율현동)",
-      zipCode: "06377",
-      tel: "",
-      firstImage: "",
-      latitude: 127.1062870355,
-      longitude: 37.47307573,
-    },
-    {
-      contentId: 2754735,
-      contentTypeId: 12,
-      title: "학동공원",
-      address: "서울특별시 강남구 논현동 279-75",
-      zipCode: "",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0237183439,
-      longitude: 37.5156081972,
-    },
-    {
-      contentId: 2754738,
-      contentTypeId: 12,
-      title: "한솔공원",
-      address: "서울특별시 강남구 광평로10길 14-17 (일원동)",
-      zipCode: "06359",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0788115244,
-      longitude: 37.4812548417,
-    },
-    {
-      contentId: 2759613,
-      contentTypeId: 12,
-      title: "일원장미공원",
-      address: "서울특별시 강남구 광평로10길 28 (일원동)",
-      zipCode: "06359",
-      tel: "",
-      firstImage: "",
-      latitude: 127.0808391326,
-      longitude: 37.4807216072,
-    },
-    {
-      contentId: 3081985,
-      contentTypeId: 12,
-      title: "청담도로공원",
-      address: "서울특별시 강남구 삼성동 80",
-      zipCode: "06085",
-      tel: "",
-      firstImage:
-        "http://tong.visitkorea.or.kr/cms/resource/79/3081979_image2_1.jpg",
-      latitude: 127.0628118632,
-      longitude: 37.52069442,
-    },
-  ],
-  error: [],
-};
-
 // 여기서부터 함수 구역 **************************************
 function search() {
   console.log("검색 시도...");
+  const accessToken = localStorage.getItem("accessToken");
+  console.log(accessToken)
   const body = {
-    selectedSidoCode,
-    selectedGunguCode,
-    selectedContentTypeCode,
-    inputKeyword
+    sidoCode: selectedSidoCode.value,
+    gunguCode: selectedGunguCode.value,
+    contentType: selectedContentTypeCode.value,
+    keyword: inputKeyword.value,
+    members: [],
   }
   console.log(body);
-  // axios
-  //   .get(url + "/여기에 검색 엔드포인트", {})
-  //   .then((response) => {
-  console.log(response);
+  axios
+    .post(url + "/trips/search", body,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    .then((response) => {
+      console.log(response);
+      markerAddress.value = [];
+      markerContentId.value = [];
+      markerContentTypeId.value = [];
+      markerFirstImage.value = [];
+      markerCoordinate.value = [];
+      markerTel.value = [];
+      markerTitle.value = [];
+      markerZipCode.value = [];
+      markerInfoVisibility.value = [];
+      markerInfoContent.value = [];
+      markerList.value = [];
 
-  for (var index = 0; index < response.data.length; index++) {
-    var currentSpot = response.data[index];
+      for (var index = 0; index < response.data.data.length; index++) {
+        var currentSpot = response.data.data[index];
 
-    markerAddress.value.push(currentSpot.address);
-    markerContentId.value.push(currentSpot.contentId);
-    markerContentTypeId.value.push(currentSpot.contentTypeId);
-    markerFirstImage.value.push(currentSpot.firstImage);
-    markerCoordinate.value.push({
-      lat: currentSpot.latitude,
-      lng: currentSpot.longitude,
-    });
-    markerTel.value.push(currentSpot.tel);
-    markerTitle.value.push(currentSpot.title);
-    markerZipCode.value.push(currentSpot.zipCode);
+        markerAddress.value.push(currentSpot.address);
+        markerContentId.value.push(currentSpot.contentId);
+        markerContentTypeId.value.push(currentSpot.contentTypeId);
+        markerFirstImage.value.push(currentSpot.firstImage);
+        markerCoordinate.value.push({
+          lat: currentSpot.latitude,
+          lng: currentSpot.longitude,
+        });
+        markerTel.value.push(currentSpot.tel);
+        markerTitle.value.push(currentSpot.title);
+        markerZipCode.value.push(currentSpot.zipCode);
 
-    //마커가 보일지 안보일지를 결정하는 배열
-    markerInfoVisibility.value.push(false);
-    //인포 윈도우를 누르면 생기는 content를 결정함
-    markerInfoContent.value.push(makeContentFor(index));
-  }
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
-  console.log("result 배열들 채우기 완료");
-
-  display(response.data);
+        //마커가 보일지 안보일지를 결정하는 배열
+        markerInfoVisibility.value.push(false);
+        //인포 윈도우를 누르면 생기는 content를 결정함
+        markerInfoContent.value.push(makeContentFor(index))
+      }
+      console.log("result 배열들 채우기 완료");
+      display(response.data.data);
+    })
+      .catch((error) => {
+          console.log(error);
+        });
 }
 
 function display(data) {
   console.log("display 호출됨");
-  const bounds = new kakao.maps.LatLngBounds();
+
+  console.log(data.length)
+  let bounds = new kakao.maps.LatLngBounds();
   for (let marker of data) {
     const markerItem = {
-      lat: marker.longitude, //데이터 오는게 바뀐듯
-      lng: marker.latitude,
+      lat: marker.latitude,
+      lng: marker.longitude,
       address: marker.address,
       contentTypeId: marker.contentTypeId,
       firstImage: marker.firstImage,
@@ -326,12 +199,14 @@ function display(data) {
     };
     markerList.value.push(markerItem);
     bounds.extend(
-      new kakao.maps.LatLng(Number(marker.longitude), Number(marker.latitude))
+      new kakao.maps.LatLng(Number(marker.latitude), Number(marker.longitude))
     );
   }
 
+  console.log(markerList.value.length)
+
   // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-  map.value?.setBounds(bounds);
+  map.value.setBounds(bounds);
 }
 
 function makeContentFor(index) {
@@ -392,6 +267,7 @@ function addMarkerToPlan (curMarkerIndex) {
   console.log("추가할 일자 인덱스 : " + curDayIndex.value)
   console.log("추가할 정보 : " + pickedMarker.address)
   places.value[curDayIndex.value].push(pickedMarker);
+  placesForSubmit.value[curDayIndex.value].push(pickedMarker.contentId);
 
   console.log("선택된 장소들...")
   console.log(places.value);
@@ -401,15 +277,32 @@ function addMarkerToPlan (curMarkerIndex) {
 
 // 여행 계획을 전송합니다... 같이 갈 사람을 초대하는 모달로 연결됩니다.
 function submitPlan() {
+  console.log("플랜제출!")
+  
+  const accessToken = localStorage.getItem("accessToken");
   const body = {
+    startDate: convertDateFormat(planDateRange.value.start),
+    endDate: convertDateFormat(planDateRange.value.end),
     planName: planName.value,
-    startDate: planDateRange.value.start,
-    endDate: planDateRange.value.end,
-    places: places.value,
+    places: placesForSubmit.value,
     members: members.value,
   };
-
   console.log(body);
+  axios
+    .post(url + "/trips", body,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': `application/json`
+        },
+      })
+      .then((response) => {
+        console.log(response.data.data)
+        alert("굿")
+      })
+      .catch((error)=> {
+        console.log(error)
+        alert("낫굿")
+      })
 }
 
 function increaseCurDay() {
@@ -440,6 +333,7 @@ function convertDateFormat(dateString) {
 function deleteMarkerFromPlan(curDayIndex, index) {
   if (curDayIndex >= 0 && curDayIndex < places.value.length) {
     places.value[curDayIndex].splice(index, 1);
+    placesForSubmit.value[curDayIndex].splice(index,1);
   }
 }
 
@@ -455,6 +349,7 @@ watch(planDateRange, () => {
   //선택된 날짜만큼 일정 배열 추가
   while(places.value.length < planSize.value+1) {
     places.value.push([]);
+    placesForSubmit.value.push([]);
   }
 });
 

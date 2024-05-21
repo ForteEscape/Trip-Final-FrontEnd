@@ -43,17 +43,43 @@ const registerRoute = "/customer/register";
                 :to="boardRoute"
                 class="nav-link active"
                 aria-current="page"
-                >게시판</RouterLink
+                >핫플레이스 게시판</RouterLink
               >
             </li>
-            <li class="nav-item">
-              <RouterLink
-                :to="searchRoute"
-                class="nav-link active"
-                aria-current="page"
-                >여행지 조회</RouterLink
+
+            <!-- 여행지 관련 -->
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
+                여행 계획
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink class="dropdown-item" :to="searchRoute" 
+                    >여행 설계</RouterLink
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <RouterLink class="dropdown-item" :to="loginRoute"
+                    >로그인</RouterLink
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <RouterLink class="dropdown-item" :to="registerRoute"
+                    >회원 가입</RouterLink
+                  >
+                </li>
+              </ul>
             </li>
+
+            <!-- 계정관리 -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -73,8 +99,12 @@ const registerRoute = "/customer/register";
                 <li><hr class="dropdown-divider" /></li>
                 <li>
                   <RouterLink class="dropdown-item" :to="loginRoute"
-                    >로그인(임시)</RouterLink
+                    >로그인</RouterLink
                   >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <button class="dropdown-item">로그아웃</button>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
@@ -84,6 +114,8 @@ const registerRoute = "/customer/register";
                 </li>
               </ul>
             </li>
+
+
           </ul>
         </div>
       </div>

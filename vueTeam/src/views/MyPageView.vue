@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://abcd4ebbe30a1e.lhr.life";
+const url = "https://f74f-175-209-87-181.ngrok-free.app";
 
 const profile = ref(null);
 const email = ref("");
@@ -32,7 +32,6 @@ const IsPasswordChange = ref(false);
 
 onMounted(() => {
   const accessToken = localStorage.getItem("accessToken");
-  // const url = "https://412306c0976506.lhr.life";
 
   if (!accessToken) {
     alert("로그인이 필요합니다");
@@ -42,7 +41,7 @@ onMounted(() => {
     axios
       .get(url + "/user", {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,'Content-Type': `application/json`,'ngrok-skip-browser-warning': '69420'
         },
       })
       .then((response) => {
@@ -75,11 +74,11 @@ onMounted(() => {
 });
 
 function refreshAccessToken() {
-  // const url = "https://412306c0976506.lhr.life";
   console.log("refresh 시도");
   console.log("refreshToken : " + localStorage.getItem("refreshToken"));
   console.log("accessToken : " + localStorage.getItem("accessToken"));
-
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
   axios
     .post(url + "/auth/reissue", {
       refreshToken: localStorage.getItem("refreshToken"),
@@ -106,7 +105,6 @@ function refreshAccessToken() {
 }
 
 async function submitEdit() {
-  // const url = "https://412306c0976506.lhr.life";
   const accessToken = localStorage.getItem("accessToken");
 
   try {
@@ -165,7 +163,6 @@ function cancelEdit() {
 
 async function changePassword() {
   try {
-    // const url = "https://412306c0976506.lhr.life";
     const accessToken = localStorage.getItem("accessToken");
 
     await axios.put(

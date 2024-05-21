@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://abcd4ebbe30a1e.lhr.life";
+const url = "https://f74f-175-209-87-181.ngrok-free.app";
 
 const email = ref("");
 const password = ref("");
