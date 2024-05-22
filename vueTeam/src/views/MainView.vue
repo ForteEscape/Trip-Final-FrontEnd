@@ -56,7 +56,7 @@ function getCount() {}
     <div class="fancy-container">
       <div class="fancy-number">총&nbsp</div>
       <div class="fancy-number" id="count">
-        <DynamicNum v-bind:spotCount="spotCount"></DynamicNum>
+        <DynamicNum v-bind:spotCount=4739></DynamicNum>
       </div>
       <div class="fancy-number">&nbsp개의 여행지</div>
     </div>
@@ -80,7 +80,7 @@ function getCount() {}
     <div class="fancy-container">
       <div class="fancy-number">회원&nbsp</div>
       <div class="fancy-number" id="count">
-        <DynamicNum v-bind:spotCount="spotCount"></DynamicNum>
+        <DynamicNum v-bind:spotCount=3></DynamicNum>
       </div>
       <div class="fancy-number">&nbsp명이 함께</div>
     </div>

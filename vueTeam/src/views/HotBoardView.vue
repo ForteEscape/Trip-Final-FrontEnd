@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
-const boards = ref([]);
+const currentBoard = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
 const url = "https://277f-175-209-87-181.ngrok-free.app"
@@ -83,6 +83,25 @@ function goWrite() {
           </div>
         </div>
       </div> -->
+            <!-- 아래는 스타일링용 임시 데이터입니다. -->
+            <div class="board-row">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="board-row">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+      <div class="board-row">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
     </div>
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>
