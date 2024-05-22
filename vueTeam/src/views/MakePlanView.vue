@@ -9,7 +9,6 @@ import {
   KakaoMapCustomOverlay,
 } from "vue3-kakao-maps";
 import axios from "axios";
-import { ssrDynamicImportKey } from "vite/runtime";
 
 const router = useRouter();
 
