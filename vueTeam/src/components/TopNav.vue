@@ -1,5 +1,8 @@
 <script setup>
 import { RouterLink, useRouter } from "vue-router";
+import { onMounted, watch } from "vue";
+import { ref } from "vue";
+import axios from "axios";
 
 const router = useRouter();
 const homeRoute = "/";
@@ -9,6 +12,19 @@ const loginRoute = "/login";
 const registerRoute = "/customer/register";
 const myPlanRoute = "/myPlan"
 const makePlanRoute = "/makePlan";
+
+const userName = ref("");
+const isLogin = ref(localStorage.getItem("isLogin"))
+
+const url = "https://eccc-175-209-87-181.ngrok-free.app";
+
+function logOut() {
+  alert("로그아웃 되었습니다!")
+  localStorage.removeItem("accessToken")
+  localStorage.removeItem("refreshToken")
+  localStorage.setItem("isLogin", false);
+  isLogin.value = false;
+}
 </script>
 
 <template>
@@ -117,7 +133,7 @@ const makePlanRoute = "/makePlan";
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <button class="dropdown-item">로그아웃</button>
+                  <button class="dropdown-item" @click="logOut">로그아웃</button>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>

@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://c368-183-101-167-192.ngrok-free.app";
+const url = "https://eccc-175-209-87-181.ngrok-free.app";
 
 const email = ref("");
 const password = ref("");
@@ -29,6 +29,7 @@ async function tryLogin() {
         if (response.data.data.accessToken && response.data.data.refreshToken) {
           localStorage.setItem("accessToken", response.data.data.accessToken);
           localStorage.setItem("refreshToken", response.data.data.refreshToken);
+          localStorage.setItem("isLogin", true);
           router.push({ name: "main" });
         } else {
           console.log("ERROR : 토큰이 존재하지 않음");

@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://c368-183-101-167-192.ngrok-free.app";
+const url = "https://eccc-175-209-87-181.ngrok-free.app";
 
 const profile = ref(null);
 const email = ref("");
@@ -199,8 +199,37 @@ function updateProfile(event) {
 <template>
   <div class="about">
     <div class="container">
-      <h2>마이페이지</h2>
-      <button @click="isEditing = !isEditing">
+      <div class="page-icon shadow">🔐</div>
+      <div class="title">
+        <h1>마이페이지</h1>
+      </div>
+
+      <img :src="profileImagePath" alt="프사" />
+      <div id="profile-box" class="shadow">
+        <div class="profile-col">
+          <p>이메일</p>
+          <div>{{ email }}</div>
+          <p>이름</p>
+          <div>{{ name }}</div>
+          <p>전화번호</p>
+          <div>{{ phone }}</div>
+          <p>시/도</p>
+          <div>{{ sidoName }}</div>
+          <p>군/구</p>
+          <div>{{ gugunName }}</div>
+          <p>사용자 식별코드</p>
+          <div>{{ userCode }}</div>
+          <p>소개</p>
+          <div>{{ comment }}</div>
+        </div>
+      </div>
+      <div>
+
+        </div>
+
+      
+    </div>
+    <button class="btn button-basic" @click="isEditing = !isEditing">
         {{ isEditing ? "수정 완료" : "수정" }}
       </button>
       <div v-if="isEditing">
@@ -211,19 +240,6 @@ function updateProfile(event) {
         <button @click="submitEdit">수정 제출</button>
         <button @click="cancelEdit">수정 취소</button>
       </div>
-
-      주소
-      <p>{{ profileImagePath }}</p>
-      <img :src="profileImagePath" alt="프사" />
-      <p>Email: {{ email }}</p>
-      <p>Name: {{ name }}</p>
-      <p>Phone: {{ phone }}</p>
-      <p>Sido Name: {{ sidoName }}</p>
-      <p>Gugun Name: {{ gugunName }}</p>
-      <p>User Code: {{ userCode }}</p>
-      <p>Comment: {{ comment }}</p>
-    </div>
-
     <button @click="IsPasswordChange = !IsPasswordChange">비밀번호 변경</button>
     <div v-if="IsPasswordChange">
       <input
@@ -244,10 +260,67 @@ function updateProfile(event) {
 </template>
 
 <style scoped>
+@import "../assets/colortheme.css";
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
+.page-icon {
+  font-size: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  width: 7rem;
+  border-radius: 50%;
+}
+
+.title * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+img {
+  max-width: 9rem;
+  min-width: 9rem;
+  max-height: 9rem;
+  min-height: 9rem;
+  border-radius: 50%;
+  border: 3px solid var(--trip-color-five);
+}
+
+#profile-box {
+  margin-top: 1rem;
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 20rem;
+  max-width: 20rem;
+  min-height: 25rem;
+  max-height: 25rem;
+  align-items: center;
+}
+
+.profile-col * {
+  padding: 0;
+  margin: 0;
+}
+
 </style>

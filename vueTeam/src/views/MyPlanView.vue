@@ -8,12 +8,12 @@ const router = useRouter();
 const result = ref();
 const selectedTrip = ref([]);
 const unSelectedTrip = ref([]);
-const url = "https://c368-183-101-167-192.ngrok-free.app";
+const url = "https://eccc-175-209-87-181.ngrok-free.app";
 // 모든 계획을 가져오는 함수
 async function getPlan() {
   const accessToken = localStorage.getItem("accessToken");
   console.log("getPlan 호출");
-  axios
+  await axios
     .get(url + "/trips", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -79,7 +79,7 @@ onMounted(() => {
         style="border-right: 1px solid var(--trip-color-six)"
       >
         <h5 style="border-bottom: 2px solid var(--trip-color-one)">
-          대기중인 여행
+          수락 대기 중
         </h5>
         <div class="card-wrapper">
           <div

@@ -6,22 +6,24 @@ import axios from "axios";
 const boards = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
+const url = "https://277f-175-209-87-181.ngrok-free.app"
 
 // 모든 게시글을 가져오는 함수
-async function getAll() {
-  // try {
-  //   const response = await axios.get(`/hotplaces?page=${currentPage.value}`);
-  //   // API 응답 데이터를 처리하여 페이지별로 게시글을 분할
-  //   const totalPages = Math.ceil(response.headers['x-total-count'] / 12); // x-total-count 헤더를 사용하여 총 페이지 수 계산
-  //   let paginatedBoards = [];
-  //   for (let i = 1; i <= totalPages; i++) {
-  //     const pageResponse = await axios.get(`/hotplaces?page=${i}`);
-  //     paginatedBoards.push(...pageResponse.data); // 각 페이지의 게시글을 paginatedBoards 배열에 추가
-  //   }
-  //   boards.value = paginatedBoards; // 전체 게시글 데이터를 boards 배열에 저장
-  // } catch (error) {
-  //   console.error("Error fetching posts:", error);
-  // }
+async function getBoard(page) {
+  console.log(page + "에 대한 getPlan 호출");
+  await axios
+    .get(url + `/hotplaces?page=${page}`, {
+      headers: {
+        "Content-Type": `application/json`,
+        "ngrok-skip-browser-warning": "69420",
+      },
+    })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 // 게시글 상세 페이지로 이동하는 함수
@@ -32,20 +34,24 @@ function toBoardDetail(id) {
 // 페이지 번호를 증가시키고 다시 게시글을 가져오는 함수
 function nextPage() {
   currentPage.value++;
-  getAll(); // 새로운 페이지 번호로 게시글을 다시 가져옵니다.
+  getBoard(currentPage.value); // 새로운 페이지 번호로 게시글을 다시 가져옵니다.
 }
 
 // 페이지 번호를 감소시키고 다시 게시글을 가져오는 함수
 function prevPage() {
   if (currentPage.value > 1) {
     currentPage.value--;
-    getAll(); // 이전 페이지 번호로 게시글을 다시 가져옵니다.
+    getBoard(currentPage.value); // 이전 페이지 번호로 게시글을 다시 가져옵니다.
   }
 }
 
 onMounted(() => {
-  getAll(); // 컴포넌트가 마운트될 때 게시글을 처음부터 가져옵니다.
+  getBoard(1); // 컴포넌트가 마운트될 때 게시글을 처음부터 가져옵니다.
 });
+
+function goWrite() {
+  router.push({ name: "hotboardwrite" });
+}
 </script>
 
 <template>
@@ -54,6 +60,7 @@ onMounted(() => {
     <div class="title">
       <h1>핫플레이스 게시판</h1>
     </div>
+    <button class="btn button-basic" @click="goWrite">글 작성하기</button>
     <div id="boardWrapper" class="shadow-inset">
       <!-- <div v-for="(group, index) in paginatedBoards" :key="index" class="board-row">
         <div v-for="post in group" :key="post.id" class="card mb-3 content shadow" @click="toBoardDetail(post.id)">
@@ -76,25 +83,6 @@ onMounted(() => {
           </div>
         </div>
       </div> -->
-      <!-- 아래는 스타일링용 임시 데이터입니다. -->
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
     </div>
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>

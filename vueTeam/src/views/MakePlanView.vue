@@ -9,6 +9,7 @@ import {
   KakaoMapCustomOverlay,
 } from "vue3-kakao-maps";
 import axios from "axios";
+import { ssrDynamicImportKey } from "vite/runtime";
 
 const router = useRouter();
 
@@ -25,7 +26,7 @@ onMounted(() => {
 });
 
 // 시도군구 불러오는 통신 함수
-const url = "https://f18a-175-209-87-181.ngrok-free.app";
+const url = "https://eccc-175-209-87-181.ngrok-free.app";
 async function getSido() {
   console.log("시도 불러오기");
   await axios
@@ -296,15 +297,24 @@ function submitPlan() {
     members: members.value,
   };
   console.log(body);
+  
+  let today = new Date();
+if(body.planName=="") {
+  alert("패널 상단에서 여행의 제목을 입력해주세요!")
+  return;
+}
   axios
-    .get(url + "/trips", body, {
+    .post(url + "/trips", body, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": `application/json`,
+        "ngrok-skip-browser-warning": "69420",
       },
     })
     .then((response) => {
-      console.log(response.data.data);
+      console.log(response);
+      alert("제출완료")
+      router.push({ name: "myplan" });
     })
     .catch((error) => {
       console.log(error);
