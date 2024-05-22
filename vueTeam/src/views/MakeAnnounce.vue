@@ -97,7 +97,6 @@ async function boardInsert() {
         <br>
 
         <div ref="editor"></div>
-        <div v-html="testHtml"></div>
         <br>
         <button type="button" class="btn button-basic" @click="boardInsert">
           작성 완료

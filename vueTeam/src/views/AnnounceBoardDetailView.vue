@@ -3,6 +3,8 @@ import { selectOne, removeBoard, updateBoard } from "@/api/board.js";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
 
 const id = ref(0);
 const name = ref("");
@@ -19,16 +21,48 @@ const currentRoute = useRoute();
 const router = useRouter();
 const key = currentRoute.params.id;
 
+const editor = ref();
+var editorValid = null;
+const testHtml = ref();
+const htmlValue = ref();
+
 const url = "http://localhost";
+
+function onChange(data) {
+  htmlValue.value = data;
+}
+
 onMounted(() => {
-  console.log('mounted...' + key);
+  editorValid = new Editor({
+    el: editor.value,
+    height: '500px',
+    initialEditType: 'wysiwyg',
+    events: {
+      change: () => onChange(editorValid.getMarkdown())
+    },
+    hooks: {
+      async addImageBlobHook(blob, callback) {
+        try {
+          const formData = new FormData();
+          formData.append('images', blob);
+
+          const response = await axios.post(url + `/util/upload/notice`, formData)
+          const filePath = response.data[0];
+
+          callback(filePath, 'nothing');
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  });
+  
   getOne();
-})
+});
 
 function toggleEdit() {
-  editTitle.value = title.value;
-  editContent.value = content.value;
   isEditing.value = !isEditing.value;
+  editTitle.value = title.value;
 }
 
 async function getOne() {
@@ -43,51 +77,49 @@ async function getOne() {
     name.value = data.author;
     readCount.value = data.viewCount;
 
+    editorValid.setHTML(content.value);
   } catch (error) {
     console.log(error);
   }
 }
 
-function boardDelete() {
-  removeBoard(
-    key,
-    () => {
-      alert("삭제처리 완료");
-      router.push("/notice");
-    },
-    (error) => {
-      alert("삭제처리 실패");
-      console.log(error)
-    }
-  )
+async function boardDelete() {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+
+    await axios.delete(url + `/notices/${key}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    alert("공지 삭제 성공");
+    router.replace({name:'notice'})
+  } catch(error) {
+    console.log(error);
+  }
 }
 
-function boardUpdate() {
-  content.value = editContent.value;
-  title.value = editTitle.value;
-  id.value = key;
-  const newBoard = {
-    id: id.value,
-    pass: pass.value,
-    name: name.value,
-    wdate: wdate.value,
-    title: editTitle.value,
-    content: editContent.value,
-    readCount: readCount.value
-  }
+async function boardUpdate() {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
 
-  console.log(newBoard)
-  updateBoard(
-    newBoard,
-    () => {
-      alert("수정 완료");
-      router.push("/notice");
-    },
-    (error) => {
-      alert("수정 실패");
-      console.log(error)
+    const modifiedNotice = {
+      title: title.value,
+      content: editorValid.getHTML()
     }
-  )
+
+    const response = await axios.put(url + `/notices/${key}`, modifiedNotice, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    alert("공지 수정 성공");
+    router.replace({name: 'notice'});
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 </script>
@@ -119,7 +151,7 @@ function boardUpdate() {
 
     <div class="board-content">
       <div v-if="!isEditing" v-html="content"></div>
-      <textarea v-else v-model="editContent"></textarea>
+      <div ref="editor" v-show="isEditing"></div>
     </div>
 
     <div class="btn-group">
