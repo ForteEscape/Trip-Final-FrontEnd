@@ -1,10 +1,10 @@
 <script setup>
-import { selectOne, removeBoard, updateBoard} from "@/api/board.js";
-import {useRoute, useRouter} from "vue-router";
+import { selectOne, removeBoard, updateBoard } from "@/api/board.js";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
+import axios from "axios";
 
 const id = ref(0);
-const pass = ref("");
 const name = ref("");
 const wdate = ref("");
 const title = ref("");
@@ -26,65 +26,54 @@ onMounted(() => {
 })
 
 function toggleEdit() {
-    editTitle.value = title.value;
-    editContent.value = content.value;
-    isEditing.value =!isEditing.value;
+  editTitle.value = title.value;
+  editContent.value = content.value;
+  isEditing.value = !isEditing.value;
 }
 
-function getOne() {
-  selectOne(key, 
-    ({data}) => {
-      id.value = data.id;
-      pass.value = data.pass;
-      name.value = data.name;
-      wdate.value = data.wdate;
-      title.value = data.title;
-      content.value = data.content;
-      readCount.value = data.readCount;
-    },
-    (error) => {console.log(error)}
-  )
+async function getOne() {
+  axios.get();
 }
 
 function boardDelete() {
   removeBoard(
-  key,
-  () => {
-    alert("삭제처리 완료"); 
-    router.push("/board");
-  },
-  (error) => {
-    alert("삭제처리 실패");
-    console.log(error)
-  }
+    key,
+    () => {
+      alert("삭제처리 완료");
+      router.push("/board");
+    },
+    (error) => {
+      alert("삭제처리 실패");
+      console.log(error)
+    }
   )
 }
 
 function boardUpdate() {
-    content.value = editContent.value;
-    title.value = editTitle.value;
-    id.value = key;
+  content.value = editContent.value;
+  title.value = editTitle.value;
+  id.value = key;
   const newBoard = {
-      id: id.value,
-      pass: pass.value,
-      name: name.value,
-      wdate: wdate.value,
-      title: editTitle.value,
-      content: editContent.value,
-      readCount: readCount.value
-    }
-
-    console.log(newBoard)
-  updateBoard(
-  newBoard,
-  () => {
-    alert("수정 완료"); 
-    router.push("/board");
-  },
-  (error) => {
-    alert("수정 실패");
-    console.log(error)
+    id: id.value,
+    pass: pass.value,
+    name: name.value,
+    wdate: wdate.value,
+    title: editTitle.value,
+    content: editContent.value,
+    readCount: readCount.value
   }
+
+  console.log(newBoard)
+  updateBoard(
+    newBoard,
+    () => {
+      alert("수정 완료");
+      router.push("/board");
+    },
+    (error) => {
+      alert("수정 실패");
+      console.log(error)
+    }
   )
 }
 
@@ -93,29 +82,31 @@ function boardUpdate() {
 <template>
   <div class="board-wrapper">
     <div class="page-icon">🔎</div>
-    <div class="title"><h1>게시글 읽기</h1></div>
-    
+    <div class="title">
+      <h1>게시글 읽기</h1>
+    </div>
+
     <div class="board-info">
-        <div class="small-label">제목</div>
-        <div>
-            <h3 v-show="!isEditing">{{title}}</h3>
-            <input v-show="isEditing" type="text" v-model="editTitle"/>
-        </div>
+      <div class="small-label">제목</div>
+      <div>
+        <h3 v-show="!isEditing">{{ title }}</h3>
+        <input v-show="isEditing" type="text" v-model="editTitle" />
+      </div>
 
-        <div class="small-label">작성자</div>
-        <h5>{{ name }}</h5>
+      <div class="small-label">작성자</div>
+      <h5>{{ name }}</h5>
 
-        <div class="small-label">작성일자</div>
-        <h5>{{ wdate }}</h5>
+      <div class="small-label">작성일자</div>
+      <h5>{{ wdate }}</h5>
 
-        <div class="small-label">조회수</div>
-        <h5>{{ readCount }}</h5>
+      <div class="small-label">조회수</div>
+      <h5>{{ readCount }}</h5>
     </div>
     <hr style="width: 90%;">
 
     <div class="board-content">
-        <p v-if="!isEditing">{{content}}</p>
-        <textarea v-else v-model="editContent"></textarea>
+      <p v-if="!isEditing">{{ content }}</p>
+      <textarea v-else v-model="editContent"></textarea>
     </div>
 
     <div class="btn-group">
@@ -140,7 +131,7 @@ function boardUpdate() {
   align-items: center;
 }
 
-.title *{
+.title * {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -151,17 +142,17 @@ function boardUpdate() {
 }
 
 .board-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .board-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 90%;
-    border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  border-radius: 8px;
 }
 
 .small-label {
@@ -170,23 +161,26 @@ function boardUpdate() {
 }
 
 .board-content {
-    width: 80%;
-    min-height: 10rem;
-    border-radius: 8px;
-    border: 2px solid gray;
-    padding: 1rem 2rem;
+  width: 80%;
+  min-height: 10rem;
+  border-radius: 8px;
+  border: 2px solid gray;
+  padding: 1rem 2rem;
 }
 
-textarea,input {
+textarea,
+input {
   border: 2px solid var(--trip-color-six);
   border-radius: 4px;
   padding: 1rem 1rem;
   width: 100%;
 }
+
 input {
   display: inline-block;
   text-align: center;
 }
+
 textarea {
   border: none;
 }

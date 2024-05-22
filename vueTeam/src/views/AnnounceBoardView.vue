@@ -9,6 +9,14 @@ const router = useRouter();
 const url = "http://localhost";
 // 모든 게시글을 가져오는 함수
 async function getAll() {
+  try {
+    const { data } = await axios.get(url + `/notices?page=${currentPage.value}`);
+    boards.value = data.data.items;
+
+  } catch (error) {
+    console.log(error);
+  }
+
   // try {
   //   const response = await axios.get(`/hotplaces?page=${currentPage.value}`);
   //   // API 응답 데이터를 처리하여 페이지별로 게시글을 분할
@@ -26,7 +34,7 @@ async function getAll() {
 
 // 게시글 상세 페이지로 이동하는 함수
 function toBoardDetail(id) {
-  router.push({ name: "detail", params: { id: id } });
+  router.push({ name: "notice-detail", params: { id: id } });
 }
 
 // 페이지 번호를 증가시키고 다시 게시글을 가져오는 함수
@@ -55,7 +63,24 @@ onMounted(() => {
       <h1>공지사항</h1>
     </div>
     <div id="boardWrapper" class="shadow-inset">
-
+      <table class="table text-center">
+        <thead>
+          <th>글 번호</th>
+          <th>제  목</th>
+          <th>작성자</th>
+          <th>조회수</th>
+          <th>작성일자</th>
+        </thead>
+        <tbody>
+          <tr v-for="notice in boards" :key="notice.id">
+            <td>{{ notice.id }}</td>
+            <td @click="toBoardDetail(notice.id)">{{ notice.title }}</td>
+            <td>{{ notice.author }}</td>
+            <td>{{ notice.viewCount }}</td>
+            <td>{{ notice.writeDate }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>
@@ -77,6 +102,7 @@ onMounted(() => {
   width: 7rem;
   border-radius: 50%;
 }
+
 .content {
   width: 48rem;
   height: 12rem;
@@ -142,6 +168,7 @@ onMounted(() => {
   align-items: center;
   gap: 1rem;
 }
+
 .pagination span {
   border-bottom: 2px solid var(--trip-color-one);
 }

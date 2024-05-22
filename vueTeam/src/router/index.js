@@ -71,7 +71,7 @@ const router = createRouter({
       component: AnnounceBoardView
     },
     {
-      path: '/notice/detail:id',
+      path: '/notice/detail/:id',
       name: 'notice-detail',
       component: AnnounceBoardDetailView
     }
