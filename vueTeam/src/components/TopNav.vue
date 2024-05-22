@@ -12,6 +12,7 @@ const loginRoute = "/login";
 const registerRoute = "/customer/register";
 const myPlanRoute = "/myPlan"
 const makePlanRoute = "/makePlan";
+const noticeRoute = "/notice";
 
 const userName = ref("");
 const isLogin = ref(localStorage.getItem("isLogin"))
@@ -75,7 +76,7 @@ function logOut() {
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <RouterLink class="dropdown-item" :to="hotBoardRoute"
+                  <RouterLink class="dropdown-item" :to="noticeRoute"
                     >공지 사항</RouterLink
                   >
                 </li>
