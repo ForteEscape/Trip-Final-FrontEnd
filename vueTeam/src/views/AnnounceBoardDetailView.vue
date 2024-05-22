@@ -39,6 +39,7 @@ async function getOne() {
     id.value = data.id;
     title.value = data.title;
     content.value = data.content;
+    wdate.value = data.writeDate;
     name.value = data.author;
     readCount.value = data.viewCount;
 
@@ -117,7 +118,7 @@ function boardUpdate() {
     <hr style="width: 90%;">
 
     <div class="board-content">
-      <p v-if="!isEditing">{{ content }}</p>
+      <div v-if="!isEditing" v-html="content"></div>
       <textarea v-else v-model="editContent"></textarea>
     </div>
 
