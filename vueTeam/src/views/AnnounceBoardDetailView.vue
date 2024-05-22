@@ -32,7 +32,19 @@ function toggleEdit() {
 }
 
 async function getOne() {
-  axios.get();
+  try {
+    const response = await axios.get(url + `/notices/${key}`);
+    const data = response.data.data;
+
+    id.value = data.id;
+    title.value = data.title;
+    content.value = data.content;
+    name.value = data.author;
+    readCount.value = data.viewCount;
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function boardDelete() {
@@ -40,7 +52,7 @@ function boardDelete() {
     key,
     () => {
       alert("삭제처리 완료");
-      router.push("/board");
+      router.push("/notice");
     },
     (error) => {
       alert("삭제처리 실패");
@@ -68,7 +80,7 @@ function boardUpdate() {
     newBoard,
     () => {
       alert("수정 완료");
-      router.push("/board");
+      router.push("/notice");
     },
     (error) => {
       alert("수정 실패");

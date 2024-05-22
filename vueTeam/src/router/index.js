@@ -11,6 +11,7 @@ import MakePlanView from '@/views/MakePlanView.vue'
 import HotBoardView from '@/views/HotBoardView.vue'
 import AnnounceBoardView from '@/views/AnnounceBoardView.vue'
 import AnnounceBoardDetailView from '@/views/AnnounceBoardDetailView.vue'
+import MakeAnnounce from '@/views/MakeAnnounce.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,11 @@ const router = createRouter({
       path: '/notice/detail/:id',
       name: 'notice-detail',
       component: AnnounceBoardDetailView
+    },
+    {
+      path: '/notice/create',
+      name: 'notice-create',
+      component: MakeAnnounce
     }
   ]
 })

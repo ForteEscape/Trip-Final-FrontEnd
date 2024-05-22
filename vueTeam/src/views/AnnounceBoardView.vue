@@ -37,6 +37,10 @@ function toBoardDetail(id) {
   router.push({ name: "notice-detail", params: { id: id } });
 }
 
+function toMakeAnnounce() {
+  router.push({name: "notice-create"});
+}
+
 // 페이지 번호를 증가시키고 다시 게시글을 가져오는 함수
 function nextPage() {
   currentPage.value++;
@@ -63,6 +67,8 @@ onMounted(() => {
       <h1>공지사항</h1>
     </div>
     <div id="boardWrapper" class="shadow-inset">
+      <button class="btn btn-primry" @click="toMakeAnnounce">글 작성</button>
+
       <table class="table text-center">
         <thead>
           <th>글 번호</th>
