@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
-const url = "https://eccc-175-209-87-181.ngrok-free.app";
+const url = "http://localhost";
 
 const email = ref("");
 const password = ref("");

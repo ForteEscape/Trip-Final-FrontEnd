@@ -16,7 +16,7 @@ const makePlanRoute = "/makePlan";
 const userName = ref("");
 const isLogin = ref(localStorage.getItem("isLogin"))
 
-const url = "https://eccc-175-209-87-181.ngrok-free.app";
+const url = "http://localhost";
 
 function logOut() {
   alert("로그아웃 되었습니다!")

@@ -7,7 +7,7 @@ import axios from "axios";
 const router = useRouter();
 const currentRoute = useRoute();
 
-const url = "https://eccc-175-209-87-181.ngrok-free.app";
+const url = "http://localhost";
 
 const curDayIndex = ref(0);
 const map = ref();
@@ -63,7 +63,7 @@ function decreaseCurDay() {
 }
 
 function display(curIndex) {
-    // const bounds = new kakao.maps.LatLngBounds();
+    const bounds = new kakao.maps.LatLngBounds();
     markerList.value = [];
     console.log("display호출")
     console.log("길이 : ")
@@ -80,12 +80,11 @@ function display(curIndex) {
           firstImage: currentSpot.firstImage,
         };
         markerList.value.push(markerItem);
-        // bounds.extend(
-        //   new kakao.maps.LatLng(Number(markerItem.lat), Number(markerItem.lng))
-        // );
-        
+        bounds.extend(
+          new kakao.maps.LatLng(Number(markerItem.lat), Number(markerItem.lng))
+        );
     }
-    // map.value.setBounds(bounds);
+    map.value.setBounds(bounds);
 }
 
 function submitYes() {

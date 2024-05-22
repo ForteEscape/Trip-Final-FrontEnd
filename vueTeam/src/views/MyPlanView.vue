@@ -8,7 +8,7 @@ const router = useRouter();
 const result = ref();
 const selectedTrip = ref([]);
 const unSelectedTrip = ref([]);
-const url = "https://eccc-175-209-87-181.ngrok-free.app";
+const url = "http://localhost";
 // 모든 계획을 가져오는 함수
 async function getPlan() {
   const accessToken = localStorage.getItem("accessToken");

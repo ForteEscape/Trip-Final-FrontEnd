@@ -19,6 +19,7 @@ const currentRoute = useRoute();
 const router = useRouter();
 const key = currentRoute.params.id;
 
+const url = "http://localhost";
 onMounted(() => {
   console.log('mounted...' + key);
   getOne();

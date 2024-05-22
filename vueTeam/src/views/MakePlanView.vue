@@ -26,7 +26,7 @@ onMounted(() => {
 });
 
 // 시도군구 불러오는 통신 함수
-const url = "https://eccc-175-209-87-181.ngrok-free.app";
+const url = "http://localhost";
 async function getSido() {
   console.log("시도 불러오기");
   await axios

@@ -6,7 +6,7 @@ import axios from "axios";
 const boards = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
-
+const url = "http://localhost";
 // 모든 게시글을 가져오는 함수
 async function getAll() {
   // try {
@@ -55,46 +55,7 @@ onMounted(() => {
       <h1>공지사항</h1>
     </div>
     <div id="boardWrapper" class="shadow-inset">
-      <!-- <div v-for="(group, index) in paginatedBoards" :key="index" class="board-row">
-        <div v-for="post in group" :key="post.id" class="card mb-3 content shadow" @click="toBoardDetail(post.id)">
-          <div class="row g-0">
-            <div class="col-md-3">
-              <img src="../assets/test4.jpg" class="img-fluid rounded-start" alt="이미지 자리 입니다." />
-            </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <h3 class="card-title">{{ post.title }}</h3>
-                <hr />
-                <div class="card-info">
-                  <p>작성자 : {{ post.name }}</p>
-                  <p>글 번호 : {{ post.id }}</p>
-                  <p>조회수 : {{ post.readCount }}</p>
-                  <p>작성일자 : {{ post.wdate }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-      <!-- 아래는 스타일링용 임시 데이터입니다. -->
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
+
     </div>
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>

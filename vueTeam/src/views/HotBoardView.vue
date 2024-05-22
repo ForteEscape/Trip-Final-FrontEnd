@@ -6,7 +6,7 @@ import axios from "axios";
 const currentBoard = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
-const url = "https://277f-175-209-87-181.ngrok-free.app"
+const url = "http://localhost";
 
 // 모든 게시글을 가져오는 함수
 async function getBoard(page) {
