@@ -145,6 +145,8 @@ const markerTitle = ref([]);
 const markerZipCode = ref([]);
 const curMarkerIndex = ref(-1);
 
+const pickedMarker = ref({});
+
 const onLoadKakaoMap = (mapRef) => {
   console.log("onLoad 호출");
   map.value = mapRef;
@@ -270,16 +272,37 @@ function makeContentFor(index) {
     </div>`;
 }
 
-function boardInsert() {
-  const new_board = {
-    title: title.value,
-    content: content.value,
+function addMarkerToWrite(curMarkerIndex) {
+  //마커 정보 등록
+  console.log("선택된 마커 인덱스 : " + curMarkerIndex);
+  console.log(markerTitle.value[curMarkerIndex]);
+
+  pickedMarker.value = {
+    address: markerAddress.value[curMarkerIndex],
+    contentId: markerContentId.value[curMarkerIndex],
+    contentTypeId: markerContentTypeId.value[curMarkerIndex],
+    firstImage: markerFirstImage.value[curMarkerIndex],
+    coordinate: markerCoordinate.value[curMarkerIndex],
+    tel: markerTel.value[curMarkerIndex],
+    title: markerTitle.value[curMarkerIndex],
+    zipCode: markerZipCode.value[curMarkerIndex],
   };
+  console.log("추가할 정보 : " + pickedMarker.address);
+}
+
+function boardInsert() {
+  // const new_board = {
+  //   contentId:,
+  //   hotplaceName:,
+  //   visitDate:,
+  //   contentTypeId:,
+  //   placeDesc:,
+  // };
 
   console.log(new_board);
   // 여기에 주소 넣고 보내기
   axios
-    .post(url + "/", new_board, {
+    .post(url + "/hotplaces", new_board, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": `application/json`,
@@ -354,8 +377,8 @@ function boardInsert() {
           :lat="33.450705"
           :lng="126.570667"
           :draggable="true"
-          :width="700"
-          :height="500"
+          :width="770"
+          :height="590"
           level="3"
           @onLoadKakaoMap="onLoadKakaoMap"
         >
@@ -381,9 +404,24 @@ function boardInsert() {
     </div>
 
 
-
+    <div class="plan-card shadow" v-if="curMarkerIndex !== -1">
+      <div class="card-info">
+          <div class="card-text">
+            <h5>{{ markerTitle[curMarkerIndex] }}</h5>
+            <button
+              @click="addMarkerToWrite(curMarkerIndex)"
+              class="btn button-basic"
+            >
+              작성시작
+            </button>
+          </div>
+      </div>
+    </div>
         <!-- ******************************** -->
-        <label for="title">제목</label>
+        <div style="display: flex;">
+          <div v-if="pickedMarker.title" style="">{{ pickedMarker.title }}에 대한 나의</div>
+          <div>&nbsp글 제목</div>
+        </div>
         <input type="text" v-model="title" />
 
         <label for="content">내용</label>
@@ -479,6 +517,59 @@ input {
 #map-content {
   display: flex;
   flex-direction: column;
-  width: 90%;
+  max-width: 40rem;
+  min-width: 40rem;
+  max-height: 30rem;
+  min-height: 30rem;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+#map-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plan-card {
+  max-width: 15rem;
+  min-width: 15rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.plan-card img{
+  background-color: var(--trip-color-six);
+  max-width: 14rem;
+  min-width: 14rem;
+  max-height: 14rem;
+  min-height: 14rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 8px;
+  min-height: 5.5rem;
+  max-height: 5.5rem;
+}
+
+.card-text h5 {
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: 2px solid var(--trip-color-one);
+}
+
+.card-text p {
+  font-size: 0.6rem;
+  margin: 0;
 }
 </style>

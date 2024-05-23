@@ -15,7 +15,7 @@ const makePlanRoute = "/makePlan";
 const noticeRoute = "/notice";
 
 const userName = ref("");
-const isLogin = ref(localStorage.getItem("isLogin"))
+const loginStatus = ref(true);
 
 const url = "http://localhost";
 
@@ -24,8 +24,15 @@ function logOut() {
   localStorage.removeItem("accessToken")
   localStorage.removeItem("refreshToken")
   localStorage.setItem("isLogin", false);
-  isLogin.value = false;
   router.push({ name: "main" });
+}
+
+function updateStatus() {
+  console.log("스테이터스 호출!");
+  const isLogin = localStorage.getItem("isLogin");
+  console.log(isLogin);
+  // Force a reactivity update by assigning the new value to loginStatus.value
+  loginStatus.value = JSON.parse(isLogin);
 }
 </script>
 
@@ -118,6 +125,7 @@ function logOut() {
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                @click="updateStatus"
               >
                 계정 관리
               </a>
@@ -128,13 +136,13 @@ function logOut() {
                   >
                 </li>
                 <li><hr class="dropdown-divider" /></li>
-                <li>
+                <li v-if="!loginStatus">
                   <RouterLink class="dropdown-item" :to="loginRoute"
                     >로그인</RouterLink
                   >
                 </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
+                
+                <li v-else>
                   <button class="dropdown-item" @click="logOut">로그아웃</button>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
