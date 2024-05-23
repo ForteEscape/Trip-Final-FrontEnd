@@ -17,9 +17,11 @@ const title = ref("");
 const content = ref("");
 const url = "http://localhost";
 const router = useRouter(); //setup단계에서 찾아놓기
+const visitDate = ref(new Date('2024-01-01'));
+const images = ref([]);
 
 const editor = ref();
-var editorValid = null;
+const editorValid = ref();
 const testHtml = ref();
 const htmlValue = ref();
 
@@ -38,12 +40,12 @@ onMounted(() => {
     router.push({ name: "login" });
   }
 
-  editorValid = new Editor({
+  editorValid.value = new Editor({
     el: editor.value,
     height: '500px',
     initialEditType: 'wysiwyg',
     events: {
-      change: () => onChange(editorValid.getMarkdown())
+      change: () => onChange(editorValid.value.getMarkdown())
     },
     hooks: {
       async addImageBlobHook(blob, callback) {
@@ -287,26 +289,70 @@ function addMarkerToWrite(curMarkerIndex) {
     title: markerTitle.value[curMarkerIndex],
     zipCode: markerZipCode.value[curMarkerIndex],
   };
-  console.log("추가할 정보 : " + pickedMarker.address);
+  console.log("추가할 정보 : " + pickedMarker.value.address);
 }
 
-function boardInsert() {
-  // const new_board = {
-  //   contentId:,
-  //   hotplaceName:,
-  //   visitDate:,
-  //   contentTypeId:,
-  //   placeDesc:,
-  // };
+function convertDateFormat(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
 
-  console.log(new_board);
-  // 여기에 주소 넣고 보내기
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+
+  return `${year}-${month}-${day}`;
+}
+
+function addImage(event) {
+  // Check if the images array length is less than 3
+  if (images.value.length < 3) {
+    // Assuming you have a way to select an image file (e.g., through an input element)
+    const fileInput = document.querySelector('#imageInput'); // Adjust the selector as needed
+    const file = fileInput.files[0]; // Get the selected file
+    if (file) {
+      images.value.push(file); // Add the file to the images array
+      console.log("이미지 추가됨!")
+      console.log(images.value)
+    }
+  } else {
+    alert('You cannot add more than 3 images.');
+  }
+}
+
+
+function boardInsert() {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const formData = new FormData();
+  for(var index=0; index<images.value.length; index++) {
+    console.log(images.value[index]);
+    formData.append("images", images.value[index]);
+  }
+  
+
+  const new_board = {
+    contentId: pickedMarker.value.contentId,
+    hotplaceName: title.value,
+    visitDate: visitDate.value,
+    contentTypeId: pickedMarker.value.contentTypeId,
+    placeDesc: editorValid.value.getHTML(),
+  };
+
+  const blob = new Blob([JSON.stringify(new_board)], {
+      type: "application/json",
+    });
+
+    formData.append("data", blob);
+
+  console.log("보낸 내용 : ")
+  console.log(formData.get('data'))
+  console.log(formData.get('images'))
   axios
-    .post(url + "/hotplaces", new_board, {
+    .post(url + "/hotplaces", formData, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": `application/json`,
-        "ngrok-skip-browser-warning": "69420",
+        "Content-Type": "multipart/form-data",
       },
     })
     .then((response) => {
@@ -330,7 +376,7 @@ function boardInsert() {
     <hr style="width: 90%" />
     <div class="content-wrapper shadow-inset">
       <div id="post">
-
+        <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem;">핫플레이스 선택</div>
         <div id="map-wrapper">
           <div id="search-wrapper">
             <!-- 시/도 선택지 -->
@@ -417,14 +463,35 @@ function boardInsert() {
           </div>
       </div>
     </div>
+
+    <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem; margin-bottom: 1rem">방문 날짜</div>
+    <div>방문일: {{ convertDateFormat(visitDate) }}</div>
+    <div style="margin-top: 0.5rem">
+      <VDatePicker
+        color="orange"
+        v-model.date="visitDate"
+        mode="string"
+      />
+    </div>
+
         <!-- ******************************** -->
-        <div style="display: flex;">
-          <div v-if="pickedMarker.title" style="">{{ pickedMarker.title }}에 대한 나의</div>
+        <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem; margin-bottom: 1rem">
+          <div v-if="pickedMarker.title">{{ pickedMarker.title }}에 대한 나의</div>
           <div>&nbsp글 제목</div>
         </div>
         <input type="text" v-model="title" />
 
-        <label for="content">내용</label>
+        <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem; margin-bottom: 1rem">참고 사진</div>
+
+        <input type="file" id="imageInput" multiple @change="addImage" />
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="font-size: 0.7rem;">여행 중에 찍은 사진이 있다면 올려주세요!</div>
+          <div style="font-size: 0.7rem;">썸네일, 참고 사진으로 활용됩니다🙂</div>
+        </div>
+        
+
+        <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem; margin-bottom: 1rem">내용</div>
         <div ref="editor"></div>
         <br />
         <br />
