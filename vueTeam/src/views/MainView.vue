@@ -8,6 +8,7 @@ const count = ref(0);
 const router = useRouter();
 const spotCount = ref(20240513);
 const notices = ref([]);
+const hotplaces = ref([])
 
 const url = 'http://localhost'
 
@@ -15,7 +16,18 @@ onMounted(() => {
   getTotalUserCount();
   getTotalAttractionCount();
   getTotalNoticeData();
+  getTop5HotPlaces();
 });
+
+async function getTop5HotPlaces() {
+  try {
+    const response = await axios.get(url + `/hotplaces/top-recommends`);
+
+    hotplaces.value = response.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 async function getTotalNoticeData() {
   try {
@@ -126,7 +138,20 @@ async function getTotalUserCount() {
       <div class="info-wrapper">
         <h3 class="info-title">🔥인기 게시글</h3>
         <div class="info-content shadow">
-          여기에 v-for로 뿌려주기
+          <table class="table text-center">
+            <thead>
+              <th>번 호</th>
+              <th>제 목</th>
+              <th>추천수</th>
+            </thead>
+            <tbody>
+              <tr v-for="hotplace in hotplaces" :key="hotplace.id">
+                <td>{{ hotplace.id }}</td>
+                <td @click="router.push({name: 'hotboarddetail', params:{id:hotplace.id}})">{{ hotplace.title }}</td>
+                <td>{{ hotplace.recommendCnt }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
