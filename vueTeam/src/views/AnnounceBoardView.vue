@@ -7,16 +7,6 @@ const currentBoard = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
 const url = "http://localhost";
-// 모든 게시글을 가져오는 함수
-async function getAll() {
-  try {
-    const { data } = await axios.get(url + `/notices?page=${currentPage.value}`);
-    boards.value = data.data.items;
-
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 async function getBoard(page) {
   try {
@@ -53,7 +43,7 @@ function prevPage() {
 }
 
 onMounted(() => {
-  getAll(); // 컴포넌트가 마운트될 때 게시글을 처음부터 가져옵니다.
+  getBoard(1); // 컴포넌트가 마운트될 때 게시글을 처음부터 가져옵니다.
 });
 </script>
 
@@ -75,7 +65,7 @@ onMounted(() => {
           <th>작성일자</th>
         </thead>
         <tbody>
-          <tr v-for="notice in boards" :key="notice.id">
+          <tr v-for="notice in currentBoard" :key="notice.id">
             <td>{{ notice.id }}</td>
             <td @click="toBoardDetail(notice.id)">{{ notice.title }}</td>
             <td>{{ notice.author }}</td>
@@ -86,9 +76,9 @@ onMounted(() => {
       </table>
     </div>
     <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>
+      <button @click="prevPage(currentPage)" :disabled="currentPage === 1" class="btn btn-warning">Previous</button>
       <span>{{ currentPage }} 페이지</span>
-      <button @click="nextPage" class="btn btn-warning">Next</button>
+      <button @click="nextPage(currentPage)" class="btn btn-warning">Next</button>
     </div>
   </div>
 </template>
