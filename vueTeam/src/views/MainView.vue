@@ -1,13 +1,52 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import DynamicNum from "@/components/DynamicNum.vue";
+import axios from "axios";
 
 const count = ref(0);
 const router = useRouter();
 const spotCount = ref(20240513);
+const notices = ref([]);
 
-function getCount() {}
+const url = 'http://localhost'
+
+onMounted(() => {
+  getTotalUserCount();
+  getTotalAttractionCount();
+  getTotalNoticeData();
+});
+
+async function getTotalNoticeData() {
+  try {
+    const response = await axios.get(url + `/notices/latest`);
+    notices.value = response.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getTotalAttractionCount() {
+  try {
+    const response = await axios.get(url + `/attraction`);
+    spotCount.value = response.data.data;
+
+    console.log("val", spotCount.value);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getTotalUserCount() {
+  try {
+    const response = await axios.get(url + `/user/count`);
+    count.value = response.data.data;
+
+    console.log("val", count.value);
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
 
 <template>
@@ -56,7 +95,7 @@ function getCount() {}
     <div class="fancy-container">
       <div class="fancy-number">총&nbsp</div>
       <div class="fancy-number" id="count">
-        <DynamicNum v-bind:spotCount=4739></DynamicNum>
+        <DynamicNum v-bind:spotCount="spotCount"></DynamicNum>
       </div>
       <div class="fancy-number">&nbsp개의 여행지</div>
     </div>
@@ -67,11 +106,28 @@ function getCount() {}
     <div class="info-row">
       <div class="info-wrapper">
         <h3 class="info-title">📢공지사항</h3>
-        <div class="info-content shadow">여기에 v-for로 뿌려주기</div>
+        <div class="info-content shadow">
+          <table class="table text-center">
+            <thead>
+              <th>번 호</th>
+              <th>제 목</th>
+              <th>조회수</th>
+            </thead>
+            <tbody>
+              <tr v-for="notice in notices" :key="notice.id">
+                <td>{{ notice.id }}</td>
+                <td @click="router.push({name: 'notice-detail', params:{id:notice.id}})">{{ notice.title }}</td>
+                <td>{{ notice.viewCount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <div class="info-wrapper">
         <h3 class="info-title">🔥인기 게시글</h3>
-        <div class="info-content shadow">여기에 v-for로 뿌려주기</div>
+        <div class="info-content shadow">
+          여기에 v-for로 뿌려주기
+        </div>
       </div>
     </div>
 
@@ -80,7 +136,7 @@ function getCount() {}
     <div class="fancy-container">
       <div class="fancy-number">회원&nbsp</div>
       <div class="fancy-number" id="count">
-        <DynamicNum v-bind:spotCount=3></DynamicNum>
+        <DynamicNum v-bind:spotCount="count"></DynamicNum>
       </div>
       <div class="fancy-number">&nbsp명이 함께</div>
     </div>
