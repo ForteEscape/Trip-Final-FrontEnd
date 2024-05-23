@@ -334,7 +334,7 @@ function boardInsert() {
   const new_board = {
     contentId: pickedMarker.value.contentId,
     hotplaceName: title.value,
-    visitDate: visitDate.value,
+    visitDate: convertDateFormat(visitDate.value),
     contentTypeId: pickedMarker.value.contentTypeId,
     placeDesc: editorValid.value.getHTML(),
   };
