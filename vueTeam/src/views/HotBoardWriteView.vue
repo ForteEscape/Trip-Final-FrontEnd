@@ -131,6 +131,7 @@ const selectedGunguCode = ref(1);
 const selectedContentTypeCode = ref(12);
 const inputKeyword = ref("");
 
+const showSection = ref(false);
 //검색 결과 관련 변수
 const map = ref();
 const markerList = ref([]);
@@ -290,6 +291,7 @@ function addMarkerToWrite(curMarkerIndex) {
     zipCode: markerZipCode.value[curMarkerIndex],
   };
   console.log("추가할 정보 : " + pickedMarker.value.address);
+  showSection.value=true;
 }
 
 function convertDateFormat(dateString) {
@@ -464,6 +466,7 @@ function boardInsert() {
       </div>
     </div>
 
+    <div v-show="showSection" style="display: flex; flex-direction: column; align-items: center;">
     <div style="display: flex; border-bottom: 2px solid var(--trip-color-one); margin-top: 1rem; margin-bottom: 1rem">방문 날짜</div>
     <div>방문일: {{ convertDateFormat(visitDate) }}</div>
     <div style="margin-top: 0.5rem">
@@ -498,6 +501,8 @@ function boardInsert() {
         <button type="button" class="btn button-basic" @click="boardInsert">
           작성 완료
         </button>
+
+      </div>
       </div>
     </div>
   </div>

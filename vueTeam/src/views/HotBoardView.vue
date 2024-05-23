@@ -76,11 +76,10 @@ function goWrite() {
             <img :src="post.representImage" class="img-fluid rounded-start" alt="Post Image" />
             <div class="card-info">
               <div style="font-size: 1.2rem; border-bottom: 2px solid var(--trip-color-one);">{{ post.title }}</div>
-              <div>
-                <div>by.{{post.author}}</div>
-                <div>at.{{post.visitDate}}</div>
+              <div class="info-footer">
+                <div>by. {{post.author}}</div>
+                <div>at. {{post.visitDate}}</div>
               </div>
-              
             </div>
         </div>
       </div>
@@ -138,9 +137,9 @@ function goWrite() {
   flex-direction: column;
   align-items: center;
   width: 90%;
-  min-width: 65rem;
-  height: 40rem;
-  margin-bottom: 3rem
+  min-width: 68rem;
+  margin-bottom: 3rem;
+  padding: 1rem;
 }
 
 .board-row {
@@ -194,5 +193,18 @@ function goWrite() {
 .pagination span {
   border-bottom: 2px solid var(--trip-color-one);
 }
+
+.info-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.4rem;
+}
+
+.info-footer div {
+  font-size: 0.9rem;
+  color: #4b4b4b;
+}
+
 
 </style>
