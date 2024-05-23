@@ -10,20 +10,19 @@ const url = "http://localhost";
 
 // 모든 게시글을 가져오는 함수
 async function getBoard(page) {
-  console.log(page + "에 대한 getPlan 호출");
-  await axios
-    .get(url + `/hotplaces?page=${page}`, {
-      headers: {
-        "Content-Type": `application/json`,
-        "ngrok-skip-browser-warning": "69420",
-      },
-    })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  try {
+    console.log(page + "에 대한 getPlan 호출");
+    const response = await axios.get(url + `/hotplaces?page=${page}`, {
+        headers: {
+          "Content-Type": `application/json`,
+          "ngrok-skip-browser-warning": "69420",
+        },
+      });
+
+    currentBoard.value = response.data.data.items;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // 게시글 상세 페이지로 이동하는 함수
@@ -62,45 +61,24 @@ function goWrite() {
     </div>
     <button class="btn button-basic" @click="goWrite">글 작성하기</button>
     <div id="boardWrapper" class="shadow-inset">
-      <!-- <div v-for="(group, index) in paginatedBoards" :key="index" class="board-row">
-        <div v-for="post in group" :key="post.id" class="card mb-3 content shadow" @click="toBoardDetail(post.id)">
+      <div class="board-row" v-for="(group, index) in currentBoard" :key="index">
+        <div class="card mb-3 content shadow" v-for="post in group" :key="post.id" @click="toBoardDetail(post.id)">
           <div class="row g-0">
             <div class="col-md-3">
-              <img src="../assets/test4.jpg" class="img-fluid rounded-start" alt="이미지 자리 입니다." />
+              <img :src="post.representImage" class="img-fluid rounded-start" alt="Post Image" />
             </div>
-            <div class="col-md-8">
+            <div class="col-md-9">
               <div class="card-body">
                 <h3 class="card-title">{{ post.title }}</h3>
                 <hr />
                 <div class="card-info">
-                  <p>작성자 : {{ post.name }}</p>
-                  <p>글 번호 : {{ post.id }}</p>
-                  <p>조회수 : {{ post.readCount }}</p>
-                  <p>작성일자 : {{ post.wdate }}</p>
+                  <p>Author: {{ post.author }}</p>
+                  <p>Visit Date: {{ post.visitDate }}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div> -->
-            <!-- 아래는 스타일링용 임시 데이터입니다. -->
-            <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-      </div>
-      <div class="board-row">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
       </div>
     </div>
     <div class="pagination">
@@ -123,6 +101,7 @@ function goWrite() {
   width: 7rem;
   border-radius: 50%;
 }
+
 .content {
   width: 48rem;
   height: 12rem;
@@ -188,6 +167,7 @@ function goWrite() {
   align-items: center;
   gap: 1rem;
 }
+
 .pagination span {
   border-bottom: 2px solid var(--trip-color-one);
 }

@@ -25,6 +25,7 @@ function logOut() {
   localStorage.removeItem("refreshToken")
   localStorage.setItem("isLogin", false);
   isLogin.value = false;
+  router.push({ name: "main" });
 }
 </script>
 

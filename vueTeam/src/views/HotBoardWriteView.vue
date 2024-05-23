@@ -1,17 +1,31 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { addBoard } from "@/api/board.js";
 import {
   KakaoMap,
   KakaoMapMarker,
   KakaoMapCustomOverlay,
 } from "vue3-kakao-maps";
 
+import { onMounted } from "vue";
+import axios from "axios";
+
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
+
 const title = ref("");
 const content = ref("");
 const url = "http://localhost";
 const router = useRouter(); //setup단계에서 찾아놓기
+
+const editor = ref();
+var editorValid = null;
+const testHtml = ref();
+const htmlValue = ref();
+
+function onChange(data) {
+  htmlValue.value = data;
+}
 
 onMounted(() => {
   const accessToken = localStorage.getItem("accessToken");
@@ -23,6 +37,30 @@ onMounted(() => {
     alert("로그인이 필요합니다");
     router.push({ name: "login" });
   }
+
+  editorValid = new Editor({
+    el: editor.value,
+    height: '500px',
+    initialEditType: 'wysiwyg',
+    events: {
+      change: () => onChange(editorValid.getMarkdown())
+    },
+    hooks: {
+      async addImageBlobHook(blob, callback) {
+        try {
+          const formData = new FormData();
+          formData.append('images', blob);
+
+          const response = await axios.post(url + `/util/upload/hotplace`, formData)
+          const filePath = response.data[0];
+
+          callback(filePath, 'nothing');
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  });
 });
 
 // 시도군구 불러오는 통신 함수
@@ -106,6 +144,18 @@ const markerTel = ref([]);
 const markerTitle = ref([]);
 const markerZipCode = ref([]);
 const curMarkerIndex = ref(-1);
+
+const onLoadKakaoMap = (mapRef) => {
+  console.log("onLoad 호출");
+  map.value = mapRef;
+  console.log("map값 : " + map.value);
+};
+
+const onClickKakaoMapMarker = (index) => {
+  console.log("마커 클릭 호출..." + index);
+  markerInfoVisibility.value[index] = !markerInfoVisibility.value[index];
+  curMarkerIndex.value = index;
+};
 
 function search() {
   console.log("검색 시도...");
@@ -196,6 +246,30 @@ function display(data) {
   map.value.setBounds(bounds);
 }
 
+function makeContentFor(index) {
+  console.log("makeContent 호출..." + index + "번 마커에 대해 생성");
+
+  let imageUrl = markerFirstImage.value[index];
+  if (!imageUrl || imageUrl === "") {
+    imageUrl = "../assets/noImage.png";
+  }
+
+  return `
+    <div
+      style="
+        padding: 10px;
+        background-color: white;
+        border: 2px solid var(--trip-color-one);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      "
+    >
+      <div style="font-weight: bold; margin-bottom: 5px">${markerTitle.value[index]}</div>
+    </div>`;
+}
+
 function boardInsert() {
   const new_board = {
     title: title.value,
@@ -233,17 +307,87 @@ function boardInsert() {
     <hr style="width: 90%" />
     <div class="content-wrapper shadow-inset">
       <div id="post">
+
+        <div id="map-wrapper">
+          <div id="search-wrapper">
+            <!-- 시/도 선택지 -->
+            <select v-model="selectedSidoCode" @change="sidoChange">
+              <option disabled value="">시/도 선택</option>
+              <option
+                v-for="sidoOption in sidoOptions"
+                :key="sidoOption.sidoCode"
+                :value="sidoOption.sidoCode"
+              >
+                {{ sidoOption.sidoName }}
+              </option>
+            </select>
+            <!-- 구/군 선택지 -->
+            <select v-model="selectedGunguCode">
+              <option disabled value="">구/군 선택</option>
+              <option
+                v-for="gunguOption in gunguOptions"
+                :key="gunguOption.gugunCode"
+                :value="gunguOption.gugunCode"
+              >
+                {{ gunguOption.gugunName }}
+              </option>
+            </select>
+            <!-- 타입 선택지 -->
+            <select v-model="selectedContentTypeCode">
+              <option disabled value="">분류 선택</option>
+              <option
+                v-for="contentTypeOption in contentTypeOptions"
+                :key="contentTypeOption.contentTypeCode"
+                :value="contentTypeOption.contentTypeCode"
+              >
+                {{ contentTypeOption.contentTypeName }}
+              </option>
+            </select>
+
+            <!-- 키워드 입력부 -->
+            <input type="text" placeholder="검색어 입력" v-model="inputKeyword" />
+            <button class="btn button-basic" @click="search">검색하기</button>
+        </div>
+      <!-- 여기서부터 카카오맵 -->
+      <div id="map-content">
+        <KakaoMap
+          :lat="33.450705"
+          :lng="126.570667"
+          :draggable="true"
+          :width="700"
+          :height="500"
+          level="3"
+          @onLoadKakaoMap="onLoadKakaoMap"
+        >
+          <KakaoMapMarker
+            v-for="(marker, index) in markerList"
+            :lat="marker.lat"
+            :lng="marker.lng"
+            :clickable="true"
+            @onClickKakaoMapMarker="onClickKakaoMapMarker(index)"
+          >
+          </KakaoMapMarker>
+          <KakaoMapCustomOverlay
+            v-for="(marker, index) in markerList"
+            :lat="marker.lat"
+            :lng="marker.lng"
+            :yAnchor="1.4"
+            :visible="markerInfoVisibility[index]"
+            :content="markerInfoContent[index]"
+          >
+          </KakaoMapCustomOverlay>
+        </KakaoMap>
+      </div>
+    </div>
+
+
+
+        <!-- ******************************** -->
         <label for="title">제목</label>
         <input type="text" v-model="title" />
 
         <label for="content">내용</label>
-        <textarea
-          id="content"
-          name="content"
-          rows="10"
-          cols="50"
-          v-model="content"
-        ></textarea>
+        <div ref="editor"></div>
         <br />
         <br />
         <button type="button" class="btn button-basic" @click="boardInsert">
@@ -316,5 +460,25 @@ input {
 
 #post input {
   width: 60%;
+}
+
+#search-wrapper {
+  width: 100%;
+  height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#search-wrapper * {
+  height: 2.5rem;
+  margin: 0.2rem;
+  min-width: 6rem;
+}
+
+#map-content {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
 }
 </style>

@@ -211,6 +211,41 @@ function submitNo() {
 
           <hr style="width: 90%; margin-top: 3rem;">
 
+          <div id="reply-wrapper">
+            <!-- reply-content에서 v-for문으로 뿌리기 -->
+            <div class="reply-content">
+              <div class="write-info">
+                <div class="writer-info">
+                  <img src="" alt="">
+                  <div>작성자이름</div>
+                </div>
+                <div class="write-date">
+                  작성일자
+                </div>
+              </div>
+              <!-- 정보끝, 아래부턴 작성 내용 -->
+              <div class="write-content">
+                <div>
+                  여기에 내용이 들어가요
+                </div>
+                <div id="delete-button" @click="">삭제</div>
+              </div>
+              
+            </div>
+            <!-- 여기까지가 달린 댓글 관련 DIV -->
+
+            <!-- 여기서부터 내가 작성하는 댓글 -->
+            <div id="reply-write">
+              <div id="reply-content">
+                댓글 작성 내용이에요 (text 박스 or input)
+              </div>
+              <div id="reply-submit" @click="">
+                작성 완료
+              </div>
+            </div>
+            <!-- 내가 작성하는 댓글 끝 -->
+          </div>
+          <hr style="width: 90%; margin-top: 3rem;">
           <div class="btn-group">
             <button class="btn button-basic" @click="submitYes">참가하기</button>
             <button class="btn btn-secondary" @click="submitNo">불참하기</button>
@@ -365,4 +400,101 @@ function submitNo() {
   border-bottom: 2px solid var(--trip-color-one);
 }
 
+#reply-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  width: 35rem;
+}
+
+.reply-content {
+  border: 1px solid var(--trip-color-six);
+  display: flex;
+  flex-direction: column;
+  min-height: 8rem;
+  border-radius: 4px;
+}
+
+.write-info {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-height: 3rem;
+  align-items: center;
+  border-bottom: 1px solid var(--trip-color-six);
+}
+
+.writer-info {
+  flex:1;
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.writer-info img {
+  background-color: var(--trip-color-six);
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 50%;
+}
+
+.writer-info div{
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.write-date {
+  flex:1;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: end;
+  margin-right: 0.5rem;
+}
+
+.write-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Adjusts the spacing between items */
+  height: 100%; /* Ensures the container takes up full available space */
+  padding: 0.2rem;
+}
+
+#delete-button {
+  align-self: flex-end; /* Aligns the button to the right side of the container */
+  margin-top: 10px; /* Adds some space above the button */
+}
+
+#delete-button {
+  min-height: 1rem;
+  max-height: 1rem;
+  font-size: 0.8rem;
+}
+
+#delete-button:hover {
+  color: var(--trip-color-two);
+}
+
+#reply-write {
+  margin-top: 1rem;
+  min-height: 6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border-radius: 4px;
+  padding: 0.2rem;
+  border: 1px solid var(--trip-color-six);
+}
+
+#reply-submit {
+  min-height: 1rem;
+  max-height: 1rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: end;
+}
+
+#reply-submit:hover {
+  color: var(--trip-color-two);
+}
 </style>
