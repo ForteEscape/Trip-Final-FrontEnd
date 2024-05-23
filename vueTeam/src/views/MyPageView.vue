@@ -197,74 +197,86 @@ function updateProfile(event) {
 </script>
 
 <template>
-  <div class="about">
-    <div class="container">
+  <div id="page-wrapper">
+      <div style="display: flex; flex-direction: column; align-items: center;">
       <div class="page-icon shadow">🔐</div>
       <div class="title">
         <h1>마이페이지</h1>
       </div>
-
-      <img :src="profileImagePath" alt="프사" />
-      <div id="profile-box" class="shadow">
-        <div class="profile-col">
-          <p>이메일</p>
-          <div>{{ email }}</div>
-          <p>이름</p>
-          <div>{{ name }}</div>
-          <p>전화번호</p>
-          <div>{{ phone }}</div>
-          <p>시/도</p>
-          <div>{{ sidoName }}</div>
-          <p>군/구</p>
-          <div>{{ gugunName }}</div>
-          <p>사용자 식별코드</p>
-          <div>{{ userCode }}</div>
-          <p>소개</p>
-          <div>{{ comment }}</div>
-        </div>
-      </div>
-      <div>
-
-        </div>
-
       
-    </div>
-    <button class="btn button-basic" @click="isEditing = !isEditing">
-        {{ isEditing ? "수정 완료" : "수정" }}
-      </button>
-      <div v-if="isEditing">
-        <input type="file" @change="updateProfile" />
-        <input type="text" v-model="name" placeholder="Name" required />
-        <input type="text" v-model="phone" placeholder="Phone Number" />
-        <textarea v-model="comment" placeholder="Comment"></textarea>
-        <button @click="submitEdit">수정 제출</button>
-        <button @click="cancelEdit">수정 취소</button>
       </div>
-    <button @click="IsPasswordChange = !IsPasswordChange">비밀번호 변경</button>
-    <div v-if="IsPasswordChange">
-      <input
-        type="password"
-        v-model="currentPassword"
-        placeholder="Current Password"
-        required
-      />
-      <input
-        type="password"
-        v-model="newPassword"
-        placeholder="New Password"
-        required
-      />
-      <button @click="changePassword">Change Password</button>
+      <hr width="90%">
+      <img :src="profileImagePath" alt="프사" />
+      
+      <div id="info-wrapper">
+        <div id="profile-box" class="shadow">
+          <div class="profile-col">
+            <p>이메일</p>
+            <div>{{ email }}</div>
+            <p>이름</p>
+            <div>{{ name }}</div>
+            <p>전화번호</p>
+            <div>{{ phone }}</div>
+            <p>시/도</p>
+            <div>{{ sidoName }}</div>
+            <p>군/구</p>
+            <div>{{ gugunName }}</div>
+            <p>사용자 식별코드</p>
+            <div>{{ userCode }}</div>
+            <p>소개</p>
+            <div>{{ comment }}</div>
+          </div>
+        </div>
+<!-- ______________________________________ -->
+        <div class="button-group shadow">
+          <button class="btn button-basic" @click="isEditing = !isEditing">
+            {{ isEditing ? "수정 완료" : "수정" }}
+          </button>
+          <div id="info-change" class="shadow"v-if="isEditing">
+            <input type="file" @change="updateProfile" />
+            이름<input type="text" v-model="name" placeholder="Name" required />
+            전화번호<input type="text" v-model="phone" placeholder="Phone Number" />
+            자기소개<textarea v-model="comment" placeholder="Comment"></textarea>
+            <button @click="submitEdit" class="btn btn-secondary">수정 제출</button>
+            <button @click="cancelEdit" class="btn btn-secondary">수정 취소</button>
+          </div>
+
+          <button @click="IsPasswordChange = !IsPasswordChange" class="btn button-basic">비밀번호 변경</button>
+          <div id="password-change" class="shadow" v-if="IsPasswordChange">
+            <input
+              type="password"
+              v-model="currentPassword"
+              placeholder="현재 비밀번호"
+              required
+            />
+            <input
+              type="password"
+              v-model="newPassword"
+              placeholder="새 비밀번호"
+              required
+            />
+            <button @click="changePassword" class="btn btn-secondary">변경하기</button>
+          </div>
+      </div>
+      </div>
     </div>
-  </div>
+
+    
+      
 </template>
 
 <style scoped>
 @import "../assets/colortheme.css";
 
-.container {
+#page-wrapper {
   display: flex;
   flex-direction: column;
+  align-items: center
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
@@ -306,6 +318,8 @@ img {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  margin-bottom: 2rem;
+  height: 32rem;
 }
 
 .profile-col {
@@ -313,8 +327,6 @@ img {
   flex-direction: column;
   min-width: 20rem;
   max-width: 20rem;
-  min-height: 25rem;
-  max-height: 25rem;
   align-items: center;
 }
 
@@ -323,4 +335,54 @@ img {
   margin: 0;
 }
 
+.profile-col p {
+  border-bottom: 2px solid var(--trip-color-one);
+  margin-top: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.button-group {
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 16rem;
+  gap: 1rem;
+  border-radius: 8px;
+  height: 32rem;
+}
+
+#info-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+#info-change {
+  background-color: white;
+  border: 2px solid var(--trip-color-one);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#password-change {
+  background-color: white;
+  border: 2px solid var(--trip-color-one);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
+}
 </style>

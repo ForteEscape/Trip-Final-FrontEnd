@@ -115,6 +115,21 @@ async function getTotalUserCount() {
       ENJOY TRIP과 함께 하세요!
     </p>
 
+    <hr style="width: 30%" />
+
+    <div class="fancy-container">
+      <div class="fancy-number">회원&nbsp</div>
+      <div class="fancy-number" id="count">
+        <DynamicNum v-bind:spotCount="count"></DynamicNum>
+      </div>
+      <div class="fancy-number">&nbsp명이 함께</div>
+    </div>
+    <p style="border-bottom: 2px solid var(--trip-color-one)">
+      추억을 공유하고 있어요!
+    </p>
+
+    <hr style="width: 70%" />
+
     <div class="info-row">
       <div class="info-wrapper">
         <h3 class="info-title">📢공지사항</h3>
@@ -158,16 +173,7 @@ async function getTotalUserCount() {
 
     <hr style="width: 70%" />
 
-    <div class="fancy-container">
-      <div class="fancy-number">회원&nbsp</div>
-      <div class="fancy-number" id="count">
-        <DynamicNum v-bind:spotCount="count"></DynamicNum>
-      </div>
-      <div class="fancy-number">&nbsp명이 함께</div>
-    </div>
-    <p style="border-bottom: 2px solid var(--trip-color-one)">
-      추억을 공유하고 있어요!
-    </p>
+
 
     <!-- <div class="card-zone">
       <div class="card-row">카드 자리 * 4</div>
@@ -232,12 +238,11 @@ async function getTotalUserCount() {
 }
 
 .info-content {
-  background-color: rgb(204, 204, 204);
-  height: 100%;
+  min-height: 16rem;
+  max-height: 16rem;
   width: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 2px;
   max-width: 30rem;
 }
 
