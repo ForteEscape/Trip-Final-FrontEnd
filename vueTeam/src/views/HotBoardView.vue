@@ -36,7 +36,7 @@ async function getBoard(page) {
 
 // 게시글 상세 페이지로 이동하는 함수
 function toBoardDetail(id) {
-  router.push({ name: "detail", params: { id: id } });
+  router.push({ name: "hotboarddetail", params: { id: id } });
 }
 
 // 페이지 번호를 증가시키고 다시 게시글을 가져오는 함수

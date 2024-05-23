@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
-const boards = ref([]);
+const currentBoard = ref([]);
 const currentPage = ref(1); // 현재 페이지 번호를 관리하기 위한 상태 변수
 const router = useRouter();
 const url = "http://localhost";
@@ -16,20 +16,17 @@ async function getAll() {
   } catch (error) {
     console.log(error);
   }
+}
 
-  // try {
-  //   const response = await axios.get(`/hotplaces?page=${currentPage.value}`);
-  //   // API 응답 데이터를 처리하여 페이지별로 게시글을 분할
-  //   const totalPages = Math.ceil(response.headers['x-total-count'] / 12); // x-total-count 헤더를 사용하여 총 페이지 수 계산
-  //   let paginatedBoards = [];
-  //   for (let i = 1; i <= totalPages; i++) {
-  //     const pageResponse = await axios.get(`/hotplaces?page=${i}`);
-  //     paginatedBoards.push(...pageResponse.data); // 각 페이지의 게시글을 paginatedBoards 배열에 추가
-  //   }
-  //   boards.value = paginatedBoards; // 전체 게시글 데이터를 boards 배열에 저장
-  // } catch (error) {
-  //   console.error("Error fetching posts:", error);
-  // }
+async function getBoard(page) {
+  try {
+    console.log(page + "에 대한 게시판 호출");
+    const response = await axios.get(url + `/notices?page=${page}`);
+
+    currentBoard.value = response.data.data.items;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // 게시글 상세 페이지로 이동하는 함수
@@ -44,14 +41,14 @@ function toMakeAnnounce() {
 // 페이지 번호를 증가시키고 다시 게시글을 가져오는 함수
 function nextPage() {
   currentPage.value++;
-  getAll(); // 새로운 페이지 번호로 게시글을 다시 가져옵니다.
+  getBoard(currentPage.value); // 새로운 페이지 번호로 게시글을 다시 가져옵니다.
 }
 
 // 페이지 번호를 감소시키고 다시 게시글을 가져오는 함수
 function prevPage() {
   if (currentPage.value > 1) {
     currentPage.value--;
-    getAll(); // 이전 페이지 번호로 게시글을 다시 가져옵니다.
+    getBoard(currentPage.value); // 이전 페이지 번호로 게시글을 다시 가져옵니다.
   }
 }
 
@@ -142,7 +139,6 @@ onMounted(() => {
   align-items: center;
   width: 90%;
   height: 40rem;
-  border: 1px solid red;
   margin-bottom: 3rem
 }
 
