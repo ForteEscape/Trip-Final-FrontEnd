@@ -4,6 +4,10 @@ import { onMounted, ref } from "vue";
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
 import axios from "axios";
 
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
+
+
 const router = useRouter();
 const currentRoute = useRoute();
 
@@ -14,15 +18,82 @@ const map = ref();
 const markerList = ref([]);
 
 const result = ref({});
+const currentUser = ref(-1);
+
+const replyArray = ref([]);
 let currentId;
+
+const editor = ref();
+var editorValid = null;
+const testHtml = ref();
+const htmlValue = ref();
+
+function onChange(data) {
+  htmlValue.value = data;
+}
 
 onMounted(async () => {
   currentId = currentRoute.params.id;
   console.log("현재 번호..." + currentId);
+
+  await getUserInfo();
   await getOnePlan(currentId); // Wait for the Promise to resolve
   display(0); // Now it's safe to call display(0)
+
+  await getReply(currentId)
+
+  editorValid = new Editor({
+    el: editor.value,
+    height: '300px',
+    initialEditType: 'wysiwyg',
+    events: {
+      change: () => onChange(editorValid.getMarkdown())
+    },
+    hooks: {
+      async addImageBlobHook(blob, callback) {
+        try {
+          alert("이미지를 넣을 수 없습니다");
+          return;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  });
 });
 
+async function getUserInfo() {
+  const accessToken = localStorage.getItem("accessToken");
+
+  return axios.get(url + `/user`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(({data}) => {
+      currentUser.value = data.data.id;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+}
+
+async function getReply(id) {
+  const accessToken = localStorage.getItem("accessToken");
+
+  return axios.get(url + `/trips/${id}/replies`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(({data}) => {
+      replyArray.value = data.data;
+      console.log("response : ", data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
 
 const onLoadKakaoMap = (mapRef) => {
   map.value = mapRef;
@@ -126,6 +197,45 @@ function submitNo() {
       console.log(error);
     });
 }
+
+function deleteReply(id) {
+  const accessToken = localStorage.getItem("accessToken");
+
+  axios.delete(url + `/trips/${currentRoute.params.id}/replies/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      alert("삭제 성공!");
+      getReply(currentRoute.params.id);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+}
+
+async function insertReply() {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const replyData = {
+    content: editorValid.getHTML()
+  }
+
+  try {
+    axios.post(url + `/trips/${currentRoute.params.id}/replies`, replyData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    alert("댓글 추가 성공!!");
+
+    await getReply(currentRoute.params.id);
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
 
 <template>
@@ -213,22 +323,21 @@ function submitNo() {
 
           <div id="reply-wrapper">
             <!-- reply-content에서 v-for문으로 뿌리기 -->
-            <div class="reply-content">
+            <div class="reply-content" v-for="reply in replyArray" :key="reply.id">
               <div class="write-info">
                 <div class="writer-info">
-                  <img src="" alt="">
-                  <div>작성자이름</div>
+                  <img :src="reply.userImage" alt="noimg">
+                  <div>{{reply.author}}</div>
                 </div>
                 <div class="write-date">
-                  작성일자
+                  {{reply.writeDate}}
                 </div>
               </div>
               <!-- 정보끝, 아래부턴 작성 내용 -->
               <div class="write-content">
-                <div>
-                  여기에 내용이 들어가요
+                <div v-html="reply.content">
                 </div>
-                <div id="delete-button" @click="">삭제</div>
+                <div v-if="currentUser == reply.userId" id="delete-button" @click="deleteReply(reply.id)">삭제</div>
               </div>
               
             </div>
@@ -237,9 +346,9 @@ function submitNo() {
             <!-- 여기서부터 내가 작성하는 댓글 -->
             <div id="reply-write">
               <div id="reply-content">
-                댓글 작성 내용이에요 (text 박스 or input)
+                <div ref="editor"></div>
               </div>
-              <div id="reply-submit" @click="">
+              <div id="reply-submit" @click="insertReply">
                 작성 완료
               </div>
             </div>
@@ -429,13 +538,17 @@ function submitNo() {
   display:flex;
   flex-direction: row;
   align-items: center;
+  padding: 0.2rem;
 }
 
 .writer-info img {
   background-color: var(--trip-color-six);
   min-width: 2.5rem;
+  max-width: 2.5rem;
   min-height: 2.5rem;
+  max-height: 2.5rem;
   border-radius: 50%;
+  /* object-fit: cover; */
 }
 
 .writer-info div{
