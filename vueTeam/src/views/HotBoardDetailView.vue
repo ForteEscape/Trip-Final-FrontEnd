@@ -1,15 +1,15 @@
 <script setup>
-import { selectOne, removeBoard, updateBoard} from "@/api/board.js";
-import {useRoute, useRouter} from "vue-router";
+import { selectOne, removeBoard, updateBoard } from "@/api/board.js";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-
-const id = ref(0);
-const pass = ref("");
-const name = ref("");
-const wdate = ref("");
-const title = ref("");
-const content = ref("");
-const readCount = ref(0);
+import {
+  KakaoMap,
+  KakaoMapMarker,
+  KakaoMapCustomOverlay,
+} from "vue3-kakao-maps";
+import axios from "axios";
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
 
 const isEditing = ref(false);
 const editTitle = ref("");
@@ -19,179 +19,149 @@ const currentRoute = useRoute();
 const router = useRouter();
 const key = currentRoute.params.id;
 
+console.log(key);
+
+const hotplaceData = ref({});
+const replyArrayData = ref([]);
+const attractionData = ref({});
+
+const editor = ref();
+var editorValid = null;
+const testHtml = ref();
+const htmlValue = ref();
+
+const url = 'http://localhost'
 onMounted(() => {
-  console.log('mounted...' + key);
-  getOne();
+  axios.get(url + `/hotplaces/${key}`)
+    .then(({data}) => {
+      hotplaceData.value = data.data;
+
+      console.log(hotplaceData.value);
+
+      getAttraction(hotplaceData.value.contentId);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  
+
+  getReply(key);
+
+  editorValid = new Editor({
+    el: editor.value,
+    height: '300px',
+    initialEditType: 'wysiwyg',
+    events: {
+      change: () => onChange(editorValid.getMarkdown())
+    },
+    hooks: {
+      async addImageBlobHook(blob, callback) {
+        try {
+          alert("이미지를 넣을 수 없습니다");
+          return;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  });
 })
 
+function onChange(data) {
+  htmlValue.value = data;
+}
+
 function toggleEdit() {
-    editTitle.value = title.value;
-    editContent.value = content.value;
-    isEditing.value =!isEditing.value;
+  editTitle.value = title.value;
+  editContent.value = content.value;
+  isEditing.value = !isEditing.value;
 }
 
-function getOne() {
-  selectOne(key, 
-    ({data}) => {
-      id.value = data.id;
-      pass.value = data.pass;
-      name.value = data.name;
-      wdate.value = data.wdate;
-      title.value = data.title;
-      content.value = data.content;
-      readCount.value = data.readCount;
-    },
-    (error) => {console.log(error)}
-  )
+async function getOne(id) {
+  const response = await axios.get(url + `/hotplaces/${id}`);
+
+  hotplaceData.value = response.data.data;
+  console.log("hotplaceData : ", hotplaceData.value);
 }
 
-function boardDelete() {
-  removeBoard(
-  key,
-  () => {
-    alert("삭제처리 완료"); 
-    router.push("/board");
-  },
-  (error) => {
-    alert("삭제처리 실패");
-    console.log(error)
-  }
-  )
+async function getReply(id) {
+  const response = await axios.get(url + `/hotplaces/${id}/replies`);
+
+  replyArrayData.value = response.data.data;
 }
 
-function boardUpdate() {
-    content.value = editContent.value;
-    title.value = editTitle.value;
-    id.value = key;
-  const newBoard = {
-      id: id.value,
-      pass: pass.value,
-      name: name.value,
-      wdate: wdate.value,
-      title: editTitle.value,
-      content: editContent.value,
-      readCount: readCount.value
-    }
+async function getAttraction(id) {
+  console.log(id);
 
-    console.log(newBoard)
-  updateBoard(
-  newBoard,
-  () => {
-    alert("수정 완료"); 
-    router.push("/board");
-  },
-  (error) => {
-    alert("수정 실패");
-    console.log(error)
-  }
-  )
+  const response = await axios.get(url + `/attraction/${id}`);
+
+  attractionData.value = response.data.data;
+  console.log(attractionData.value);
+}
+
+function deleteReply(id) {
+  console.log(id);
 }
 
 </script>
 
 <template>
-  <div class="board-wrapper">
-    <div class="page-icon">🔎</div>
-    <div class="title"><h1>게시글 읽기</h1></div>
-    
-    <div class="board-info">
-        <div class="small-label">제목</div>
-        <div>
-            <h3 v-show="!isEditing">{{title}}</h3>
-            <input v-show="isEditing" type="text" v-model="editTitle"/>
+  <div id="page-wrapper">
+    <div class="page-icon shadow">🗺️</div>
+    <div class="title">
+      <h1>계획 상세조회</h1>
+    </div>
+
+    <hr width="90%">
+
+    <h5 class="small-title">제목</h5>
+    <div style="font-size: 1.8rem; margin-bottom: 2rem;">{{ hotplaceData.title }}</div>
+    <div style="border-radius: 8px; overflow: hidden;">
+      <KakaoMap :lat="37.514575" :lng="127.0495556" :width="500" :height="400" @onLoadKakaoMap="onLoadKakaoMap"
+        :level="14">
+        <KakaoMapMarker :lat="attractionData.latitude" :lng="attractionData.longitude" />
+      </KakaoMap>
+    </div>
+
+    <div id="content">
+      <hr style="width: 90%; margin-top: 3rem;">
+
+      <div id="reply-wrapper">
+        <!-- reply-content에서 v-for문으로 뿌리기 -->
+        <div class="reply-content" v-for="reply in replyArrayData" :key="reply.id">
+          <div class="write-info">
+            <div class="writer-info">
+              <img :src="reply.userImage" alt="noimg">
+              <div>{{ reply.author }}</div>
+            </div>
+            <div class="write-date">
+              {{ reply.writeDate }}
+            </div>
+          </div>
+          <!-- 정보끝, 아래부턴 작성 내용 -->
+          <div class="write-content">
+            <div v-html="reply.content">
+            </div>
+            <div v-if="currentUser == reply.userId" id="delete-button" @click="deleteReply(reply.id)">삭제</div>
+          </div>
+
         </div>
+        <!-- 여기까지가 달린 댓글 관련 DIV -->
 
-        <div class="small-label">작성자</div>
-        <h5>{{ name }}</h5>
-
-        <div class="small-label">작성일자</div>
-        <h5>{{ wdate }}</h5>
-
-        <div class="small-label">조회수</div>
-        <h5>{{ readCount }}</h5>
-    </div>
-    <hr style="width: 90%;">
-
-    <div class="board-content">
-        <p v-if="!isEditing">{{content}}</p>
-        <textarea v-else v-model="editContent"></textarea>
-    </div>
-
-    <div class="btn-group">
-      <button class="btn button-basic" v-if="!isEditing" @click="toggleEdit">글 수정</button>
-      <button class="btn btn-danger" v-if="!isEditing" @click="boardDelete">글 삭제</button>
-      <button v-if="isEditing" @click="toggleEdit">수정 취소</button>
-      <button v-if="isEditing" @click="boardUpdate">수정 반영</button>
+        <!-- 여기서부터 내가 작성하는 댓글 -->
+        <div id="reply-write">
+          <div id="reply-content">
+            <div ref="editor"></div>
+          </div>
+          <div id="reply-submit" @click="insertReply">
+            작성 완료
+          </div>
+        </div>
+        <!-- 내가 작성하는 댓글 끝 -->
+      </div>
+      <hr style="width: 90%; margin-top: 3rem;">
     </div>
   </div>
 </template>
 
-<style scoped>
-@import "../assets/colortheme.css";
-
-.page-icon {
-  font-size: 60px;
-}
-
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.title *{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  font-size: 40px;
-  font-weight: 700;
-}
-
-.board-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.board-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 90%;
-    border-radius: 8px;
-}
-
-.small-label {
-
-  margin-top: 1rem;
-}
-
-.board-content {
-    width: 80%;
-    min-height: 10rem;
-    border-radius: 8px;
-    border: 2px solid gray;
-    padding: 1rem 2rem;
-}
-
-textarea,input {
-  border: 2px solid var(--trip-color-six);
-  border-radius: 4px;
-  padding: 1rem 1rem;
-  width: 100%;
-}
-input {
-  display: inline-block;
-  text-align: center;
-}
-textarea {
-  border: none;
-}
-
-.btn-group {
-  margin-top: 2rem;
-  gap: 1rem;
-}
-</style>
+<style scoped></style>
